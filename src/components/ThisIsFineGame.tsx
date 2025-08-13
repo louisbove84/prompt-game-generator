@@ -100,7 +100,7 @@ const ThisIsFineGame: React.FC = () => {
       // Load background image
       if (!bgImgRef.current) {
         const img = new Image();
-        img.src = '/itsFine-3x2.jpg';
+        img.src = '/games/itsFine-3x2.jpg';
         img.onload = () => (bgImgRef.current = img);
       }
     };

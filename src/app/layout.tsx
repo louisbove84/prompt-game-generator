@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     siteName: `${CONTACT_INFO.name} Portfolio`,
     images: [
       {
-        url: '/headShot.jpeg',
+        url: '/profile/headShot.jpeg',
         width: 1200,
         height: 630,
         alt: `${CONTACT_INFO.name} - ${CONTACT_INFO.title}`,
@@ -31,19 +31,19 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: `${CONTACT_INFO.name} - ${CONTACT_INFO.title}`,
     description: `${CONTACT_INFO.bio.short} ${CONTACT_INFO.bio.skills}`,
-    images: ['/headShot.jpeg'],
+    images: ['/profile/headShot.jpeg'],
   },
   other: {
     'fc:miniapp': JSON.stringify({
       version: '1',
-      imageUrl: 'https://www.beuxbunk.com/itsFine-3x2.jpg',
+      imageUrl: 'https://www.beuxbunk.com/games/itsFine-3x2.jpg',
       button: {
         title: '🎮 Play Meme Games',
         action: {
           type: 'launch_miniapp',
           url: 'https://www.beuxbunk.com/frame',
           name: 'Meme Games Hub',
-          splashImageUrl: 'https://www.beuxbunk.com/itsFine-200x200.jpg',
+          splashImageUrl: 'https://www.beuxbunk.com/games/itsFine-200x200.jpg',
           splashBackgroundColor: '#FF6B6B',
         },
       },

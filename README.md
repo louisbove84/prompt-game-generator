@@ -2,7 +2,7 @@
 
 Intelligent game generation platform that creates custom games from user prompts using modern web technologies and AI.
 
-![Meme Games Hub](./public/itsFine.jpg)
+![AI Game Generator](./public/games/itsFine.jpg)
 
 ## 🎮 Live Demo
 

@@ -8,14 +8,14 @@ export const metadata: Metadata = {
     // Mini App embed (new format)
     'fc:miniapp': JSON.stringify({
       version: "1",
-      imageUrl: "https://www.beuxbunk.com/itsFine-3x2.jpg",
+      imageUrl: "https://www.beuxbunk.com/games/itsFine-3x2.jpg",
       button: {
         title: "🎮 Play Meme Games",
         action: {
           type: "launch_miniapp",
           url: "https://www.beuxbunk.com/frame",
           name: "Meme Games Hub",
-          splashImageUrl: "https://www.beuxbunk.com/itsFine-200x200.jpg",
+          splashImageUrl: "https://www.beuxbunk.com/games/itsFine-200x200.jpg",
           splashBackgroundColor: "#FF6B6B"
         }
       }
