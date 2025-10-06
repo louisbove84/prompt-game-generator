@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { sdk } from '@farcaster/miniapp-sdk';
 import { WalletConnect } from '../components/WalletConnect';
 
-import { generateGame } from '../services/grokAPI';
+// API route handles Grok API calls server-side to avoid CORS
 import DynamicGameLoader from '../components/DynamicGameLoader';
 
 export default function Home() {
@@ -50,7 +50,19 @@ export default function Home() {
       setTimeout(() => setGenerationStatus('🎮 Building game components...'), 8000);
       setTimeout(() => setGenerationStatus('✨ Finalizing your game...'), 12000);
       
-      const result = await generateGame({ userPrompt: gamePrompt });
+      // Call our API route (server-side) instead of Grok directly to avoid CORS
+      const response = await fetch('/api/generate-game', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userPrompt: gamePrompt,
+          temperature: 0.7,
+        }),
+      });
+      
+      const result = await response.json();
       
       const duration = ((Date.now() - startTime) / 1000).toFixed(2);
       console.log(`⏱️ [Main] API call completed in ${duration}s`);

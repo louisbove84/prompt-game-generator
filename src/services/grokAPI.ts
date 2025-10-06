@@ -39,27 +39,23 @@ export async function generateGame(
   }
 
   console.log('✓ [Game Generation] API key found');
-  console.log('🌐 [Game Generation] Calling Grok API...');
-
-  try {
-    const response = await fetch(GROK_API_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${GROK_API_KEY}`,
-      },
-      body: JSON.stringify({
-        model: 'grok-4-latest',
-        stream: false,
-        temperature: request.temperature || 0.7,
-        messages: [
-          {
-            role: 'system',
-            content: GAME_GENERATION_SYSTEM_PROMPT
-          },
-          {
-            role: 'user',
-            content: `Create a game based on this description:
+  
+  const MAX_RETRIES = 2;
+  let lastGeneratedCode = '';
+  
+  for (let attempt = 1; attempt <= MAX_RETRIES + 1; attempt++) {
+    try {
+      console.log(`🌐 [Game Generation] Attempt ${attempt}/${MAX_RETRIES + 1}: Calling Grok API...`);
+      
+      // Build messages - add correction prompt if this is a retry
+      const messages: any[] = [
+        {
+          role: 'system',
+          content: GAME_GENERATION_SYSTEM_PROMPT
+        },
+        {
+          role: 'user',
+          content: `Create a game based on this description:
 
 "${request.userPrompt}"
 
@@ -78,33 +74,81 @@ Remember to:
 8. Make it fun and polished!
 
 Generate the complete game component now:`
-          }
-        ]
-      })
-    });
+        }
+      ];
+      
+      // If retry, add correction instructions
+      if (attempt > 1 && lastGeneratedCode) {
+        messages.push({
+          role: 'assistant',
+          content: lastGeneratedCode
+        });
+        messages.push({
+          role: 'user',
+          content: `🚨 CRITICAL ERROR: Your code contains FORBIDDEN JSX elements!
 
-    console.log('📡 [Game Generation] Response received, status:', response.status);
-    
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      console.error('❌ [Game Generation] API error:', response.status, errorData);
-      throw new Error(
-        `Grok API error: ${response.status} ${response.statusText}. ${JSON.stringify(errorData)}`
-      );
-    }
+You violated the JSX rules by using <h1>, <h2>, <span>, <p>, or other forbidden tags.
 
-    console.log('✓ [Game Generation] Response OK, parsing data...');
-    const data = await response.json();
-    
-    console.log('📊 [Game Generation] Tokens used:', data.usage?.total_tokens || 'unknown');
-    
-    if (!data.choices || data.choices.length === 0) {
-      console.error('❌ [Game Generation] No choices in response');
-      throw new Error('No response from Grok AI');
-    }
+✅ ALLOWED JSX (ONLY):
+- <div> for layout wrappers
+- <canvas> for game rendering
+- <button> for restart button
 
-    const gameCode = data.choices[0].message.content;
-    console.log('📦 [Game Generation] Game code received, length:', gameCode?.length || 0, 'chars');
+❌ FORBIDDEN JSX (causes errors):
+- NO <h1>, <h2>, <h3>, <h4>, <h5>, <h6> tags
+- NO <span>, <p>, <img> tags
+- NO ANY other HTML elements
+
+📌 HOW TO FIX:
+- Remove ALL <h1> game titles - draw text on canvas using ctx.fillText() instead
+- Remove ALL <span>, <p> text elements - use canvas ctx.fillText()
+- Keep ONLY <div>, <canvas>, <button> in the return statement
+
+Please regenerate the COMPLETE game code following these rules EXACTLY.`
+        });
+        console.log('⚠️ [Game Generation] Sending correction request for forbidden JSX...');
+      }
+
+      const response = await fetch(GROK_API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${GROK_API_KEY}`,
+        },
+        body: JSON.stringify({
+          model: 'grok-4-latest',
+          stream: false,
+          temperature: request.temperature || 0.7,
+          messages
+        })
+      });
+
+      console.log('📡 [Game Generation] Response received, status:', response.status);
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        console.error('❌ [Game Generation] API error:', response.status, errorData);
+        throw new Error(
+          `Grok API error: ${response.status} ${response.statusText}. ${JSON.stringify(errorData)}`
+        );
+      }
+
+      console.log('✓ [Game Generation] Response OK, parsing data...');
+      const data = await response.json();
+      
+      console.log('📊 [Game Generation] Tokens used:', data.usage?.total_tokens || 'unknown');
+      
+      if (!data.choices || data.choices.length === 0) {
+        console.error('❌ [Game Generation] No choices in response');
+        throw new Error('No response from Grok AI');
+      }
+
+      const gameCode = data.choices[0].message.content;
+      lastGeneratedCode = gameCode;
+      console.log('📦 [Game Generation] Game code received, length:', gameCode?.length || 0, 'chars');
+      
+      // JSX is now supported! Babel will transform it in the loader
+      console.log('✅ [Game Generation] Code received - JSX will be transformed by Babel');
     
     // Validate that we got code back
     if (!gameCode || !gameCode.includes('React')) {
@@ -152,23 +196,34 @@ Generate the complete game component now:`
 
     console.log('✅ [Game Generation] SUCCESS! Game ready to load');
     
-    return {
-      success: true,
-      gameCode: cleanedCode,
-      tokensUsed: data.usage?.total_tokens || 0
-    };
-  } catch (error) {
-    console.error('❌ [Game Generation] FAILED:', error);
-    console.error('❌ [Game Generation] Error details:', error instanceof Error ? error.message : 'Unknown error');
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : 'Unknown error occurred'
-    };
+      return {
+        success: true,
+        gameCode: cleanedCode,
+        tokensUsed: data.usage?.total_tokens || 0
+      };
+    } catch (error) {
+      console.error(`❌ [Game Generation] Attempt ${attempt} FAILED:`, error);
+      if (attempt > MAX_RETRIES) {
+        console.error('❌ [Game Generation] All retries exhausted');
+        return {
+          success: false,
+          error: error instanceof Error ? error.message : 'Unknown error occurred'
+        };
+      }
+      console.log(`🔄 [Game Generation] Retrying...`);
+    }
   }
+  
+  // Should never reach here, but just in case
+  return {
+    success: false,
+    error: 'Failed to generate game after maximum retries'
+  };
 }
 
 /**
- * Clean the generated code (remove markdown, extra whitespace, etc.)
+ * Clean the generated code (remove markdown, ensure proper format)
+ * NOTE: TypeScript and JSX are now handled by Babel in the loader
  */
 function cleanGameCode(code: string): string {
   console.log('🧹 [Cleaner] Starting code cleanup...');
@@ -176,58 +231,6 @@ function cleanGameCode(code: string): string {
   // Remove markdown code blocks if present
   let cleaned = code.replace(/```tsx?\n?/g, '').replace(/```\n?/g, '');
   console.log('✓ [Cleaner] Markdown removed');
-  
-  // Remove import statements - they'll be provided by the loader
-  const importPattern = /^import\s+.*?from\s+['"].*?['"];?\s*$/gm;
-  const removedImports = cleaned.match(importPattern);
-  if (removedImports) {
-    console.log('🔍 [Cleaner] Found', removedImports.length, 'import statements to remove');
-    console.log('📋 [Cleaner] Imports:', removedImports);
-  }
-  cleaned = cleaned.replace(importPattern, '');
-  console.log('✓ [Cleaner] Imports removed');
-  
-  // Remove TypeScript interface and type definitions (multiline support)
-  // Match interfaces with proper brace counting
-  const interfacePattern = /interface\s+\w+\s*(\{(?:[^{}]|\{[^{}]*\})*\})/gs;
-  const typePattern = /^type\s+\w+\s*=\s*[^;]+;/gm;
-  
-  const removedInterfaces = cleaned.match(interfacePattern);
-  if (removedInterfaces) {
-    console.log('🔍 [Cleaner] Found', removedInterfaces.length, 'interfaces to remove:');
-    removedInterfaces.forEach((iface, idx) => {
-      console.log(`  ${idx + 1}. ${iface.substring(0, 100)}...`);
-    });
-  }
-  cleaned = cleaned.replace(interfacePattern, '');
-  
-  const removedTypes = cleaned.match(typePattern);
-  if (removedTypes) {
-    console.log('🔍 [Cleaner] Found', removedTypes.length, 'type definitions to remove');
-  }
-  cleaned = cleaned.replace(typePattern, '');
-  console.log('✓ [Cleaner] TypeScript definitions removed');
-  
-  // Remove type annotations from function parameters and variables
-  // IMPORTANT: Be careful not to break object properties
-  
-  // 1. Function parameters: (e: React.TouchEvent) => (e)
-  cleaned = cleaned.replace(/\((\w+):\s*[^)]+\)/g, '($1)');
-  
-  // 2. Array destructuring types: const [value, setValue]: [type, type] = 
-  cleaned = cleaned.replace(/(\]\s*):\s*\[[^\]]+\]/g, '$1');
-  
-  // 3. React.FC annotations: const GeneratedGame: React.FC = () => { ... }
-  cleaned = cleaned.replace(/:\s*React\.FC(<[^>]*>)?(?=\s*=)/g, '');
-  
-  // 4. Variable type annotations BUT NOT object properties
-  // Match: "const bird: Bird =" but NOT "bird: Bird," in objects
-  // Only remove type annotations that are followed by = (assignment)
-  cleaned = cleaned.replace(/(\bconst\s+\w+\s*):\s*[\w.<>]+(?=\s*=)/g, '$1');
-  cleaned = cleaned.replace(/(\blet\s+\w+\s*):\s*[\w.<>]+(?=\s*=)/g, '$1');
-  cleaned = cleaned.replace(/(\bvar\s+\w+\s*):\s*[\w.<>]+(?=\s*=)/g, '$1');
-  
-  console.log('✓ [Cleaner] Type annotations removed');
   
   // Remove any leading/trailing whitespace
   cleaned = cleaned.trim();
@@ -237,7 +240,8 @@ function cleanGameCode(code: string): string {
     cleaned = "'use client';\n\n" + cleaned;
   }
   
-  console.log('✓ [Cleaner] Cleanup complete');
+  console.log('✓ [Cleaner] Cleanup complete - code length:', cleaned.length);
+  console.log('ℹ️ [Cleaner] TypeScript & JSX will be transformed by Babel in the loader');
   return cleaned;
 }
 

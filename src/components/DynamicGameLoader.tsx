@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import * as Babel from '@babel/standalone';
 
 interface DynamicGameLoaderProps {
   gameCode: string;
@@ -9,9 +10,10 @@ interface DynamicGameLoaderProps {
 }
 
 /**
- * Dynamic Game Loader
+ * Dynamic Game Loader with Babel JSX Transformation
  * 
  * Loads and runs AI-generated game code dynamically
+ * Uses Babel to transform JSX to executable JavaScript
  * WARNING: This uses eval() which can be dangerous in production
  * Only use with trusted, validated code
  */
@@ -33,14 +35,17 @@ const DynamicGameLoader: React.FC<DynamicGameLoaderProps> = ({
         setIsLoading(true);
         setError(null);
 
-        // Transform the code to be executable
-        // Remove 'use client' directive as it's not needed in runtime
+        // Step 1: Remove 'use client' directive
         console.log('🧹 [Game Loader] Removing "use client" directive...');
-        let executableCode = gameCode.replace(/['"]use client['"];?\s*/g, '');
+        let code = gameCode.replace(/['"]use client['"];?\s*/g, '');
         
-        // Remove the export default statement and capture the component name
+        // Step 2: Remove imports (we provide React directly)
+        console.log('🧹 [Game Loader] Removing import statements...');
+        code = code.replace(/import\s+.*?from\s+['"].*?['"];?\s*/g, '');
+        
+        // Step 3: Find and remove export default statement
         console.log('🔍 [Game Loader] Finding component export...');
-        const exportMatch = executableCode.match(/export default (\w+);?/);
+        const exportMatch = code.match(/export default (\w+);?/);
         if (!exportMatch) {
           console.error('❌ [Game Loader] No default export found');
           throw new Error('Could not find default export in game code');
@@ -48,9 +53,27 @@ const DynamicGameLoader: React.FC<DynamicGameLoaderProps> = ({
         const componentName = exportMatch[1];
         console.log('✓ [Game Loader] Component name:', componentName);
         
-        executableCode = executableCode.replace(/export default \w+;?/, '');
+        code = code.replace(/export default \w+;?/, '');
         
-        // Create a function that returns the component
+        // Step 4: Transform JSX + TypeScript with Babel
+        console.log('🔄 [Game Loader] Transforming JSX + TypeScript with Babel...');
+        const transformed = Babel.transform(code, {
+          presets: [
+            ['typescript', { allExtensions: true, isTSX: true }],
+            'react'
+          ],
+          filename: 'game.tsx',
+        });
+        
+        if (!transformed.code) {
+          throw new Error('Babel transformation failed');
+        }
+        
+        console.log('✓ [Game Loader] JSX transformed successfully!');
+        console.log('📝 [Game Loader] Transformed code preview (first 500 chars):');
+        console.log(transformed.code.substring(0, 500));
+        
+        // Step 5: Create a function that returns the component
         console.log('⚙️ [Game Loader] Creating component factory...');
         const componentFactory = new Function(
           'React',
@@ -59,7 +82,7 @@ const DynamicGameLoader: React.FC<DynamicGameLoaderProps> = ({
           'useRef',
           'useCallback',
           `
-          ${executableCode}
+          ${transformed.code}
           return ${componentName};
           `
         );

@@ -89,29 +89,44 @@ const GeneratedGame: React.FC = () => {
     canvas.style.height = gameHeight + 'px';
   }, [gameWidth, gameHeight]);
 
-  // 3. Game loop
+  // 3. Game loop - PERFORMANCE CRITICAL
   useEffect(() => {
     if (gameState !== 'playing') return;
 
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
     const gameLoop = setInterval(() => {
-      // Update game logic here
+      const objects = gameObjectsRef.current;
+      
+      // UPDATE: Modify objects directly in ref (NO setState here!)
       // - Move objects
       // - Check collisions
-      // - Update score
-      // - Check win/lose conditions
+      // - Increment score in ref
       
-      // Example:
-      // setGameObjects(prev => {
-      //   // Update logic
-      //   return updatedObjects;
-      // });
+      // DRAW: Draw everything to canvas
+      ctx.fillStyle = '#000000';
+      ctx.fillRect(0, 0, gameWidth, gameHeight);
+      
+      // Draw game objects using ctx methods
+      // ctx.fillRect(...), ctx.arc(...), etc.
+      
+      // Check game over condition
+      // if (collision) {
+      //   setGameState('gameOver'); // setState is OK here - happens once
+      // }
     }, 1000 / 60); // 60 FPS
 
     return () => clearInterval(gameLoop);
   }, [gameState, gameWidth, gameHeight]);
 
-  // 4. Keyboard controls
+  // 4. Keyboard controls (Desktop/Browser ONLY)
   useEffect(() => {
+    // Only enable keyboard controls on desktop (non-touch devices)
+    if (isMobile) return;
+    
     const handleKeyDown = (e: KeyboardEvent) => {
       if (gameState !== 'playing') return;
       
@@ -120,7 +135,7 @@ const GeneratedGame: React.FC = () => {
         e.preventDefault();
       }
 
-      // Handle controls
+      // Handle controls - Arrow keys for movement, Space for action
       switch (e.key) {
         case 'ArrowLeft':
           // Move left
@@ -135,17 +150,19 @@ const GeneratedGame: React.FC = () => {
           // Move down
           break;
         case ' ':
-          // Shoot or action
+          // Shoot or action (Space bar)
           break;
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [gameState]);
+  }, [gameState, isMobile]);
 
-  // 5. Touch controls (mobile)
+  // 5. Touch controls (Mobile/Frame ONLY)
   const handleTouch = useCallback((e: React.TouchEvent) => {
+    // Only enable touch controls on mobile/frame
+    if (!isMobile) return;
     if (gameState !== 'playing') return;
     
     const canvas = canvasRef.current;
@@ -156,52 +173,30 @@ const GeneratedGame: React.FC = () => {
     const touchX = touch.clientX - rect.left;
     const touchY = touch.clientY - rect.top;
 
-    // Handle touch input
-    // Example: Move player to touch position
-  }, [gameState, gameWidth]);
+    // Handle touch input - tap anywhere to jump/shoot, or use touch position
+    // Example: Tap to jump/action
+    e.preventDefault();
+  }, [gameState, gameWidth, isMobile]);
 
-  // 6. Draw function
+  // 6. Draw game over/won screens (only when NOT playing)
   useEffect(() => {
+    if (gameState === 'playing') return;
+    
     const canvas = canvasRef.current;
     if (!canvas) return;
-    
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
     
-    // Clear canvas
-    ctx.fillStyle = '#000000'; // Background color
+    // Draw overlay
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
     ctx.fillRect(0, 0, gameWidth, gameHeight);
     
-    // Draw game objects
-    // Example:
-    // ctx.fillStyle = '#ffffff';
-    // ctx.fillRect(x, y, width, height);
-    
-    // Draw score
-    ctx.fillStyle = '#ffffff';
-    ctx.font = '16px "Courier New"';
-    ctx.fillText(\`Score: \${score}\`, 10, 25);
-    
-    // Draw game over screen
-    if (gameState === 'gameOver') {
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
-      ctx.fillRect(0, 0, gameWidth, gameHeight);
-      ctx.fillStyle = '#ff0000';
-      ctx.font = '24px "Courier New"';
-      const text = 'GAME OVER';
-      ctx.fillText(text, gameWidth / 2 - ctx.measureText(text).width / 2, gameHeight / 2);
-    }
-    
-    // Draw win screen
-    if (gameState === 'won') {
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
-      ctx.fillRect(0, 0, gameWidth, gameHeight);
-      ctx.fillStyle = '#00ff00';
-      ctx.font = '24px "Courier New"';
-      const text = 'YOU WIN!';
-      ctx.fillText(text, gameWidth / 2 - ctx.measureText(text).width / 2, gameHeight / 2);
-    }
-  }, [gameState, score, gameWidth, gameHeight]);
+    // Draw text
+    ctx.fillStyle = gameState === 'gameOver' ? '#ff0000' : '#00ff00';
+    ctx.font = '24px "Courier New"';
+    const text = gameState === 'gameOver' ? 'GAME OVER' : 'YOU WIN!';
+    ctx.fillText(text, gameWidth / 2 - ctx.measureText(text).width / 2, gameHeight / 2);
+  }, [gameState, gameWidth, gameHeight]);
 
   // 7. Reset game
   const resetGame = () => {
@@ -264,20 +259,36 @@ CRITICAL REQUIREMENTS - READ CAREFULLY:
 
 1. The game MUST be a React functional component using TypeScript
 2. Use canvas for ALL rendering - no DOM-based game elements
-3. **CRITICAL**: The ONLY JSX allowed is:
-   - The canvas element: <canvas ref={canvasRef} ... />
-   - The restart button: <button onClick={resetGame}>RESTART</button>
-   - Simple wrapper divs with className for layout ONLY
+
+3. **JSX and Layout**:
+   ✅ You can use normal React JSX in the return statement
+   ✅ Use standard HTML elements: <div>, <canvas>, <button>, <h1>, etc.
+   ✅ Use Tailwind CSS classes for styling
+   
+   ⚠️ IMPORTANT: Game rendering MUST still use Canvas 2D API
+   - ALL game graphics (sprites, enemies, projectiles, etc.) MUST use ctx.fillRect(), ctx.arc(), ctx.drawImage(), etc.
+   - Game titles/UI CAN be JSX (e.g., <h1 className="...">Game Title</h1>)
+   - Buttons, menus, overlays CAN be JSX
+   - But the actual GAME OBJECTS must render to canvas
+
 4. **NO CUSTOM JSX COMPONENTS** - everything must render to canvas
 5. All game graphics MUST use canvas 2D context: ctx.fillRect(), ctx.arc(), ctx.drawImage(), etc.
-6. Support both desktop (keyboard) and mobile (touch) controls
+6. **CRITICAL**: Implement platform-specific controls:
+   - Desktop: ONLY keyboard (Arrow keys + Space bar)
+   - Mobile/Frame: ONLY touch (onTouchStart on canvas)
+   - Check isMobile flag to enable the correct control scheme
+   - Keyboard controls should NOT work on mobile, touch should NOT work on desktop
 7. Be responsive: desktop ~320-420px, mobile full-screen
 8. Include game states: 'playing', 'gameOver', 'won'
 9. Include score tracking
 10. Use setInterval for game loop (60 FPS)
-11. Follow the EXACT structure of SpaceInvadersGame and ThisIsFineGame templates
-12. Use refs for real-time game state (gameObjectsRef)
-13. The component will be dynamically loaded - keep it simple and working
+11. **PERFORMANCE**: Keep ALL game logic and drawing INSIDE the game loop interval
+    - Do NOT use separate useEffect for drawing with score dependencies
+    - Do NOT call setState inside the game loop (except for game over)
+    - Store score in ref, only update state when game ends
+12. Follow the EXACT structure of SpaceInvadersGame and ThisIsFineGame templates
+13. Use refs for real-time game state (gameObjectsRef)
+14. The component will be dynamically loaded - keep it simple and working
 
 GAME TEMPLATE STRUCTURE:
 - Game should be self-contained in a single component
@@ -294,15 +305,26 @@ STYLING:
 - Monospace fonts (Courier New)
 
 CONTROLS:
-- Desktop: Arrow keys for movement, Space for action
-- Mobile: Touch to control (tap, drag, or buttons)
-- Both must work seamlessly
+- **Desktop/Browser ONLY**: Arrow keys for movement, Space bar for action/jump
+  * Use \`window.addEventListener\` for keyboard controls
+  * Arrow keys: ArrowUp, ArrowDown, ArrowLeft, ArrowRight
+  * Space bar for action
+- **Mobile/Frame ONLY**: Touch controls (tap screen or on-screen buttons)
+  * Use onTouchStart, onTouchMove, onTouchEnd events on the canvas
+  * Detect mobile with window.innerWidth or ontouchstart check
+- Implement BOTH control schemes - keyboard for desktop, touch for mobile
+- NO cross-platform controls (e.g., clicking on desktop should not trigger game actions)
 
 CODE QUALITY:
 - Clean, readable code with comments
 - Type-safe TypeScript
 - Proper cleanup of event listeners
-- Performance optimized (60 FPS target)
+- **CRITICAL PERFORMANCE**:
+  * Use refs for game state (gameObjectsRef) - NEVER use setState in game loop
+  * Draw function should NOT be in useEffect with dependencies on score/state
+  * Game loop should call draw() directly, not trigger re-renders
+  * Only use setState for UI changes (game over screen, final score display)
+  * Target: Solid 60 FPS performance
 
 Return ONLY the complete .tsx file content, nothing else. No markdown, no explanations.`;
 
