@@ -129,9 +129,8 @@ The game is deployed on Vercel and integrated with the main portfolio site.
 
 ## 👨‍💻 Developer
 
-**Louis Bové**
+**GameForge Team**
 - Portfolio: [beuxbunk.com](https://www.beuxbunk.com)
-- LinkedIn: [linkedin.com/in/louisbove84](https://www.linkedin.com/in/louisbove84/)
 - GitHub: [github.com/louisbove84](https://github.com/louisbove84)
 
 ## 📄 License

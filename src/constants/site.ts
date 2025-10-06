@@ -3,7 +3,7 @@ const WEBSITE_URL = 'https://launch.beuxbunk.com';
 
 export const CONTACT_INFO = {
   // Personal Information
-  name: 'Louis Bové',
+  name: 'GameForge',
   title: 'AI Game Generator',
   
   // Contact Details  
