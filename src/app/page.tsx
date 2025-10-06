@@ -12,6 +12,7 @@ export default function Home() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedGame, setGeneratedGame] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [generationStatus, setGenerationStatus] = useState<string>('');
 
   useEffect(() => {
     // Call sdk.actions.ready() after the app is fully loaded and ready to display
@@ -26,23 +27,52 @@ export default function Home() {
   }, []);
 
   const handleGenerateGame = async () => {
-    if (!gamePrompt.trim()) return;
+    if (!gamePrompt.trim()) {
+      console.warn('⚠️ [Main] Empty prompt, aborting');
+      return;
+    }
+    
+    console.log('🚀 [Main] Starting game generation...');
+    console.log('📝 [Main] Prompt:', gamePrompt);
     
     setIsGenerating(true);
     setError(null);
+    setGenerationStatus('🔍 Analyzing your prompt...');
     
     try {
+      console.log('⏱️ [Main] Calling generateGame API...');
+      const startTime = Date.now();
+      
+      // Simulate progress updates
+      setTimeout(() => setGenerationStatus('🤖 Asking Grok AI to generate your game...'), 500);
+      setTimeout(() => setGenerationStatus('⚙️ Grok is thinking and coding...'), 2000);
+      setTimeout(() => setGenerationStatus('🎨 Designing game mechanics...'), 5000);
+      setTimeout(() => setGenerationStatus('🎮 Building game components...'), 8000);
+      setTimeout(() => setGenerationStatus('✨ Finalizing your game...'), 12000);
+      
       const result = await generateGame({ userPrompt: gamePrompt });
       
+      const duration = ((Date.now() - startTime) / 1000).toFixed(2);
+      console.log(`⏱️ [Main] API call completed in ${duration}s`);
+      
       if (result.success && result.gameCode) {
-        setGeneratedGame(result.gameCode);
+        console.log('✅ [Main] Game generated successfully!');
+        console.log('📊 [Main] Tokens used:', result.tokensUsed);
+        console.log('📦 [Main] Code size:', result.gameCode.length, 'chars');
+        setGenerationStatus('✅ Game generated! Loading...');
+        setTimeout(() => setGeneratedGame(result.gameCode), 500);
       } else {
+        console.error('❌ [Main] Generation failed:', result.error);
         setError(result.error || 'Failed to generate game');
+        setGenerationStatus('');
       }
     } catch (err) {
+      console.error('❌ [Main] Exception caught:', err);
       setError(err instanceof Error ? err.message : 'An error occurred');
+      setGenerationStatus('');
     } finally {
       setIsGenerating(false);
+      console.log('🏁 [Main] Generation process completed');
     }
   };
 
@@ -121,6 +151,12 @@ export default function Home() {
                 </div>
               )}
             </button>
+            
+            {generationStatus && (
+              <div className="mt-4 p-4 bg-blue-900/50 border border-blue-500 rounded-lg">
+                <p className="text-blue-200 text-sm animate-pulse">{generationStatus}</p>
+              </div>
+            )}
             
             {error && (
               <div className="mt-4 p-4 bg-red-900/50 border border-red-500 rounded-lg">

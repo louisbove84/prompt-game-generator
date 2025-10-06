@@ -260,17 +260,24 @@ export const GAME_GENERATION_SYSTEM_PROMPT = `You are an expert game developer s
 
 Your task is to generate a complete, working game component based on the user's description.
 
-REQUIREMENTS:
+CRITICAL REQUIREMENTS - READ CAREFULLY:
+
 1. The game MUST be a React functional component using TypeScript
-2. Use canvas for rendering (no DOM-based game elements)
-3. Support both desktop (keyboard) and mobile (touch) controls
-4. Be responsive: desktop ~320-420px, mobile full-screen
-5. Include game states: 'playing', 'gameOver', 'won'
-6. Include score tracking
-7. Use requestAnimationFrame or setInterval for game loop
-8. Include a restart button when game ends
-9. Follow the exact structure of the provided template
-10. Use refs for real-time game state (gameObjectsRef)
+2. Use canvas for ALL rendering - no DOM-based game elements
+3. **CRITICAL**: The ONLY JSX allowed is:
+   - The canvas element: <canvas ref={canvasRef} ... />
+   - The restart button: <button onClick={resetGame}>RESTART</button>
+   - Simple wrapper divs with className for layout ONLY
+4. **NO CUSTOM JSX COMPONENTS** - everything must render to canvas
+5. All game graphics MUST use canvas 2D context: ctx.fillRect(), ctx.arc(), ctx.drawImage(), etc.
+6. Support both desktop (keyboard) and mobile (touch) controls
+7. Be responsive: desktop ~320-420px, mobile full-screen
+8. Include game states: 'playing', 'gameOver', 'won'
+9. Include score tracking
+10. Use setInterval for game loop (60 FPS)
+11. Follow the EXACT structure of SpaceInvadersGame and ThisIsFineGame templates
+12. Use refs for real-time game state (gameObjectsRef)
+13. The component will be dynamically loaded - keep it simple and working
 
 GAME TEMPLATE STRUCTURE:
 - Game should be self-contained in a single component

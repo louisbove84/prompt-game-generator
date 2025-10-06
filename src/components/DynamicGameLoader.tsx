@@ -27,22 +27,31 @@ const DynamicGameLoader: React.FC<DynamicGameLoaderProps> = ({
   useEffect(() => {
     const loadGame = async () => {
       try {
+        console.log('🎯 [Game Loader] Starting to load game...');
+        console.log('📏 [Game Loader] Code length:', gameCode.length, 'chars');
+        
         setIsLoading(true);
         setError(null);
 
         // Transform the code to be executable
         // Remove 'use client' directive as it's not needed in runtime
+        console.log('🧹 [Game Loader] Removing "use client" directive...');
         let executableCode = gameCode.replace(/['"]use client['"];?\s*/g, '');
         
         // Remove the export default statement and capture the component name
+        console.log('🔍 [Game Loader] Finding component export...');
         const exportMatch = executableCode.match(/export default (\w+);?/);
         if (!exportMatch) {
+          console.error('❌ [Game Loader] No default export found');
           throw new Error('Could not find default export in game code');
         }
         const componentName = exportMatch[1];
+        console.log('✓ [Game Loader] Component name:', componentName);
+        
         executableCode = executableCode.replace(/export default \w+;?/, '');
         
         // Create a function that returns the component
+        console.log('⚙️ [Game Loader] Creating component factory...');
         const componentFactory = new Function(
           'React',
           'useState',
@@ -55,6 +64,7 @@ const DynamicGameLoader: React.FC<DynamicGameLoaderProps> = ({
           `
         );
 
+        console.log('🏭 [Game Loader] Executing component factory...');
         // Execute the function with React hooks
         const Component = componentFactory(
           React,
@@ -64,11 +74,14 @@ const DynamicGameLoader: React.FC<DynamicGameLoaderProps> = ({
           React.useCallback
         );
 
+        console.log('✅ [Game Loader] Component created successfully!');
         setGameComponent(() => Component);
         setIsLoading(false);
+        console.log('🎮 [Game Loader] Game ready to render!');
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : 'Failed to load game';
-        console.error('Game loading error:', err);
+        console.error('❌ [Game Loader] FAILED:', err);
+        console.error('❌ [Game Loader] Error message:', errorMessage);
         setError(errorMessage);
         setIsLoading(false);
         onError?.(errorMessage);
