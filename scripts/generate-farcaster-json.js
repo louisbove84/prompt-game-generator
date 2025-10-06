@@ -17,7 +17,7 @@ const FARCSTER_CONFIG = {
     iconUrl: 'https://www.beuxbunk.com/images/gameForgeLoading.jpg',
     homeUrl: CONTACT_INFO.website,
     imageUrl: 'https://www.beuxbunk.com/images/gameForge.jpg',
-    buttonTitle: 'Play Games',
+    buttonTitle: 'Game Forge: Use LLMs to Create Arcade Games',
     splashImageUrl: 'https://www.beuxbunk.com/images/gameForgeLoading.jpg',
     splashBackgroundColor: '#FF6B6B',
     webhookUrl: `${CONTACT_INFO.website}/api/webhook`,

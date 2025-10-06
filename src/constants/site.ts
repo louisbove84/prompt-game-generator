@@ -38,7 +38,7 @@ export const FARCSTER_CONFIG = {
     iconUrl: CONTACT_INFO.images.icon,
     homeUrl: CONTACT_INFO.website,
     imageUrl: CONTACT_INFO.images.hero,
-    buttonTitle: 'Create Games',
+    buttonTitle: 'Game Forge: Use LLMs to Create Arcade Games',
     splashImageUrl: CONTACT_INFO.images.icon,
     splashBackgroundColor: '#FF6B6B',
     webhookUrl: `${CONTACT_INFO.website}/api/webhook`,
@@ -55,7 +55,7 @@ export const FARCSTER_CONFIG = {
     version: '1',
     imageUrl: CONTACT_INFO.images.hero,
     button: {
-      title: '🎮 Create Games',
+      title: '🎮 Game Forge: Use LLMs to Create Arcade Games',
       action: {
         type: 'launch_miniapp',
         url: `${CONTACT_INFO.website}/frame`,

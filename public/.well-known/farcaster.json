@@ -5,7 +5,7 @@
     "iconUrl": "https://www.beuxbunk.com/images/gameForgeLoading.jpg",
     "homeUrl": "https://launch.beuxbunk.com",
     "imageUrl": "https://www.beuxbunk.com/images/gameForge.jpg",
-    "buttonTitle": "Play Games",
+    "buttonTitle": "Game Forge: Use LLMs to Create Arcade Games",
     "splashImageUrl": "https://www.beuxbunk.com/images/gameForgeLoading.jpg",
     "splashBackgroundColor": "#FF6B6B",
     "webhookUrl": "https://launch.beuxbunk.com/api/webhook",
