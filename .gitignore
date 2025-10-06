@@ -1,2 +1,20 @@
 .vercel
 node_modules
+*.mp4
+
+# Environment variables
+.env*.local
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Vercel setup with actual API keys (keep local only)
+VERCEL_SETUP.md
+
+# Next.js
+.next/
+out/
+*.log
+dist/
+build/

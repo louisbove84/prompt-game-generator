@@ -36,7 +36,7 @@ Intelligent game generation platform that creates custom games from user prompts
 - Endless scrolling gameplay
 - Obstacle generation and collision detection
 - Progressive speed increase
-- Meme-inspired visual design
+- AI-powered game generation
 
 ## 🚀 Getting Started
 

@@ -2,10 +2,16 @@
 
 import { useState, useEffect } from 'react';
 import { sdk } from '@farcaster/miniapp-sdk';
+import { WalletConnect } from '../components/WalletConnect';
+
+import { generateGame } from '../services/grokAPI';
+import DynamicGameLoader from '../components/DynamicGameLoader';
 
 export default function Home() {
   const [gamePrompt, setGamePrompt] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
+  const [generatedGame, setGeneratedGame] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     // Call sdk.actions.ready() after the app is fully loaded and ready to display
@@ -23,20 +29,54 @@ export default function Home() {
     if (!gamePrompt.trim()) return;
     
     setIsGenerating(true);
-    // TODO: Implement AI game generation logic
-    setTimeout(() => {
+    setError(null);
+    
+    try {
+      const result = await generateGame({ userPrompt: gamePrompt });
+      
+      if (result.success && result.gameCode) {
+        setGeneratedGame(result.gameCode);
+      } else {
+        setError(result.error || 'Failed to generate game');
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
+    } finally {
       setIsGenerating(false);
-      alert(`Coming soon! Your prompt: "${gamePrompt}"`);
-    }, 2000);
+    }
+  };
+
+  const handleBackToGenerator = () => {
+    setGeneratedGame(null);
+    setError(null);
   };
 
   const playExistingGame = (gameType: 'runner' | 'spaceinvaders') => {
     window.location.href = `/frame?game=${gameType}`;
   };
 
+  // If game is generated, show it
+  if (generatedGame) {
+    return (
+      <DynamicGameLoader 
+        gameCode={generatedGame} 
+        onBack={handleBackToGenerator}
+        onError={(err) => {
+          setError(err);
+          setGeneratedGame(null);
+        }}
+      />
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 py-8 px-4">
       <div className="max-w-4xl mx-auto">
+        {/* Wallet Connection */}
+        <div className="flex justify-center mb-6">
+          <WalletConnect />
+        </div>
+        
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-6xl font-bold text-white mb-4">🎮</h1>
@@ -81,6 +121,12 @@ export default function Home() {
                 </div>
               )}
             </button>
+            
+            {error && (
+              <div className="mt-4 p-4 bg-red-900/50 border border-red-500 rounded-lg">
+                <p className="text-red-200 text-sm">{error}</p>
+              </div>
+            )}
           </div>
         </div>
 

@@ -11,6 +11,7 @@ export const metadata: Metadata = {
   description: `${CONTACT_INFO.bio.short} ${CONTACT_INFO.bio.skills}`,
   keywords: `${CONTACT_INFO.name}, AI Game Generator, Interactive Games, Next.js, React, TypeScript, Farcaster`,
   authors: [{ name: CONTACT_INFO.name }],
+  manifest: '/manifest.json',
   openGraph: {
     title: `${CONTACT_INFO.name} - ${CONTACT_INFO.title}`,
     description: `${CONTACT_INFO.bio.short} ${CONTACT_INFO.bio.skills}`,

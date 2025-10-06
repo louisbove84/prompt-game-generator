@@ -1,8 +1,8 @@
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Meme Games Hub - Choose Your Chaos',
-  description: 'Two iconic meme games: Space Invaders and This Is Fine Runner. Choose your chaos!',
+  title: 'GameForge Hub - Create Your Games',
+  description: 'AI-powered game generator that creates custom games from your imagination. Build unique gaming experiences!',
 }
 
 export default function FrameLayout({

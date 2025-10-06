@@ -1,14 +1,14 @@
 import { NextResponse } from 'next/server';
 
 export async function GET() {
-  // Create a meme-themed SVG image for the frame
+  // Create a game creation themed SVG image for the frame
   const svg = `
     <svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" style="stop-color:#FF6B6B;stop-opacity:1" />
-          <stop offset="50%" style="stop-color:#4ECDC4;stop-opacity:1" />
-          <stop offset="100%" style="stop-color:#45B7D1;stop-opacity:1" />
+          <stop offset="0%" style="stop-color:#1a1a2e;stop-opacity:1" />
+          <stop offset="50%" style="stop-color:#16213e;stop-opacity:1" />
+          <stop offset="100%" style="stop-color:#0f3460;stop-opacity:1" />
         </linearGradient>
         <filter id="glow">
           <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
@@ -21,90 +21,87 @@ export async function GET() {
       
       <rect width="1200" height="630" fill="url(#bg)"/>
       
-      <!-- Meme sparkles background -->
-      <g fill="#FFD93D" opacity="0.9">
-        ${Array.from({ length: 50 }, () => {
+      <!-- AI sparkles background -->
+      <g fill="#00D4FF" opacity="0.8">
+        ${Array.from({ length: 30 }, () => {
           const x = Math.random() * 1200;
           const y = Math.random() * 630;
-          const size = Math.random() * 3 + 1;
-          return `<polygon points="${x},${y-size} ${x+size},${y} ${x},${y+size} ${x-size},${y}" fill="#FFD93D"/>`;
+          const size = Math.random() * 4 + 2;
+          return `<circle cx="${x}" cy="${y}" r="${size}" fill="#00D4FF"/>`;
         }).join('')}
       </g>
       
       <!-- Main title -->
-      <text x="600" y="180" text-anchor="middle" font-family="Comic Sans MS, cursive" font-size="64" font-weight="bold" fill="#FFFFFF" stroke="#000" stroke-width="3" filter="url(#glow)">
-        MEME GAMES HUB
+      <text x="600" y="180" text-anchor="middle" font-family="Arial, sans-serif" font-size="64" font-weight="bold" fill="#FFFFFF" stroke="#00D4FF" stroke-width="3" filter="url(#glow)">
+        GAMEFORGE HUB
       </text>
       
       <!-- Subtitle -->
-      <text x="600" y="240" text-anchor="middle" font-family="Comic Sans MS, cursive" font-size="28" fill="#FFFFFF" stroke="#000" stroke-width="2">
-        Choose Your Chaos! 🎮
+      <text x="600" y="240" text-anchor="middle" font-family="Arial, sans-serif" font-size="28" fill="#00D4FF" stroke="#000" stroke-width="2">
+        Create Your Games with AI! 🤖
       </text>
       
-      <!-- Game Options with meme styling -->
+      <!-- Game Creation Options -->
       <g transform="translate(200, 320)">
-        <!-- Space Invaders section -->
-        <rect x="0" y="0" width="200" height="100" rx="15" fill="#FF6B6B" stroke="#FFFFFF" stroke-width="4"/>
-        <text x="100" y="35" text-anchor="middle" font-family="Comic Sans MS, cursive" font-size="20" fill="#FFFFFF" font-weight="bold">
-          🚀 SPACE
+        <!-- AI Game Generator section -->
+        <rect x="0" y="0" width="200" height="100" rx="15" fill="#00D4FF" stroke="#FFFFFF" stroke-width="4"/>
+        <text x="100" y="35" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#FFFFFF" font-weight="bold">
+          🤖 AI GAME
         </text>
-        <text x="100" y="60" text-anchor="middle" font-family="Comic Sans MS, cursive" font-size="20" fill="#FFFFFF" font-weight="bold">
-          INVADERS
+        <text x="100" y="60" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#FFFFFF" font-weight="bold">
+          GENERATOR
         </text>
-        <text x="100" y="85" text-anchor="middle" font-family="Comic Sans MS, cursive" font-size="14" fill="#FFFF99">
-          pew pew pew!
+        <text x="100" y="85" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#E6F7FF">
+          Create with AI!
         </text>
       </g>
       
       <g transform="translate(800, 320)">
-        <!-- This Is Fine section -->
-        <rect x="0" y="0" width="200" height="100" rx="15" fill="#32CD32" stroke="#FFFFFF" stroke-width="4"/>
-        <text x="100" y="35" text-anchor="middle" font-family="Comic Sans MS, cursive" font-size="20" fill="#FFFFFF" font-weight="bold">
-          🔥 THIS IS
+        <!-- Custom Games section -->
+        <rect x="0" y="0" width="200" height="100" rx="15" fill="#4ECDC4" stroke="#FFFFFF" stroke-width="4"/>
+        <text x="100" y="35" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#FFFFFF" font-weight="bold">
+          🎮 CUSTOM
         </text>
-        <text x="100" y="60" text-anchor="middle" font-family="Comic Sans MS, cursive" font-size="20" fill="#FFFFFF" font-weight="bold">
-          FINE
+        <text x="100" y="60" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#FFFFFF" font-weight="bold">
+          GAMES
         </text>
-        <text x="100" y="85" text-anchor="middle" font-family="Comic Sans MS, cursive" font-size="14" fill="#FFFF99">
-          everything's ok!
+        <text x="100" y="85" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#E6F7FF">
+          Your vision!
         </text>
       </g>
       
-      <!-- Meme characters preview -->
+      <!-- Game creation preview -->
       <g transform="translate(300, 480)">
-        <!-- Space Invader (pixelated alien) -->
-        <rect x="0" y="0" width="8" height="8" fill="#00FF00"/>
-        <rect x="8" y="0" width="8" height="8" fill="#00FF00"/>
-        <rect x="16" y="0" width="8" height="8" fill="#00FF00"/>
-        <rect x="24" y="0" width="8" height="8" fill="#00FF00"/>
-        <rect x="32" y="0" width="8" height="8" fill="#00FF00"/>
-        <rect x="0" y="8" width="8" height="8" fill="#00FF00"/>
-        <rect x="32" y="8" width="8" height="8" fill="#00FF00"/>
-        <rect x="8" y="16" width="8" height="8" fill="#00FF00"/>
-        <rect x="16" y="16" width="8" height="8" fill="#00FF00"/>
-        <rect x="24" y="16" width="8" height="8" fill="#00FF00"/>
+        <!-- AI Brain/Neural Network -->
+        <circle cx="20" cy="20" r="15" fill="#00D4FF" opacity="0.8"/>
+        <circle cx="40" cy="15" r="8" fill="#4ECDC4" opacity="0.6"/>
+        <circle cx="50" cy="25" r="6" fill="#00D4FF" opacity="0.4"/>
+        <circle cx="35" cy="35" r="10" fill="#4ECDC4" opacity="0.7"/>
+        <!-- Connection lines -->
+        <line x1="20" y1="20" x2="40" y2="15" stroke="#00D4FF" stroke-width="2" opacity="0.6"/>
+        <line x1="40" y1="15" x2="50" y2="25" stroke="#4ECDC4" stroke-width="2" opacity="0.6"/>
+        <line x1="20" y1="20" x2="35" y2="35" stroke="#00D4FF" stroke-width="2" opacity="0.6"/>
       </g>
       
       <g transform="translate(700, 480)">
-        <!-- This Is Fine dog (simplified) -->
-        <circle cx="20" cy="15" r="12" fill="#8B4513"/>
-        <rect x="10" y="25" width="20" height="20" fill="#8B4513"/>
-        <rect x="15" y="5" width="10" height="8" fill="#A0522D"/>
-        <circle cx="15" cy="12" r="2" fill="#000"/>
-        <circle cx="25" cy="12" r="2" fill="#000"/>
-        <!-- Fire around dog -->
-        <polygon points="5,40 10,30 15,40" fill="#FF4500"/>
-        <polygon points="35,40 40,30 45,40" fill="#FF4500"/>
-        <polygon points="0,35 5,25 10,35" fill="#FF6347"/>
+        <!-- Game controller -->
+        <rect x="10" y="15" width="40" height="20" rx="10" fill="#333" stroke="#00D4FF" stroke-width="2"/>
+        <circle cx="20" cy="25" r="3" fill="#00D4FF"/>
+        <circle cx="40" cy="25" r="3" fill="#00D4FF"/>
+        <rect x="25" y="20" width="10" height="10" rx="2" fill="#4ECDC4"/>
+        <!-- Game elements -->
+        <rect x="60" y="10" width="8" height="8" fill="#00FF00"/>
+        <rect x="70" y="15" width="8" height="8" fill="#FF6B6B"/>
+        <rect x="80" y="12" width="8" height="8" fill="#FFD700"/>
       </g>
       
       <!-- Frame indicator -->
-      <rect x="20" y="20" width="220" height="60" rx="15" fill="rgba(255, 107, 107, 0.3)" stroke="#FF6B6B" stroke-width="3"/>
-      <text x="130" y="45" text-anchor="middle" font-family="Comic Sans MS, cursive" font-size="18" fill="#FFFFFF" font-weight="bold" stroke="#000" stroke-width="1">
+      <rect x="20" y="20" width="280" height="60" rx="15" fill="rgba(0, 212, 255, 0.3)" stroke="#00D4FF" stroke-width="3"/>
+      <text x="160" y="45" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#FFFFFF" font-weight="bold" stroke="#000" stroke-width="1">
         🎮 Farcaster Frame
       </text>
-      <text x="130" y="65" text-anchor="middle" font-family="Comic Sans MS, cursive" font-size="14" fill="#FFFF99">
-        Much wow, such games!
+      <text x="160" y="65" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#E6F7FF">
+        Create amazing games with AI!
       </text>
     </svg>
   `;

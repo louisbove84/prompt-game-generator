@@ -20,11 +20,11 @@ export const CONTACT_INFO = {
   
   // Image paths (hosted on main website)
   images: {
-    hero: 'https://www.beuxbunk.com/games/itsFine-3x2.jpg',
-    icon: 'https://www.beuxbunk.com/games/itsFine-200x200.jpg',
+    hero: 'https://www.beuxbunk.com/images/gameForge.jpg',
+    icon: 'https://www.beuxbunk.com/images/gameForgeLoading.jpg',
     screenshots: [
-      'https://www.beuxbunk.com/images/screenshot1.svg',
-      'https://www.beuxbunk.com/images/screenshot2.svg'
+      'https://www.beuxbunk.com/images/gameForge.jpg',
+      'https://www.beuxbunk.com/images/gameForgeLoading.jpg'
     ]
   }
 } as const;
@@ -33,21 +33,21 @@ export const CONTACT_INFO = {
 export const FARCSTER_CONFIG = {
   // Manifest config for .well-known/farcaster.json
   manifest: {
-    name: 'Meme Games Hub',
+    name: 'GameForge Hub',
     version: '1',
     iconUrl: CONTACT_INFO.images.icon,
     homeUrl: CONTACT_INFO.website,
     imageUrl: CONTACT_INFO.images.hero,
-    buttonTitle: 'Play Meme Games',
+    buttonTitle: 'Create Games',
     splashImageUrl: CONTACT_INFO.images.icon,
     splashBackgroundColor: '#FF6B6B',
     webhookUrl: `${CONTACT_INFO.website}/api/webhook`,
-    subtitle: 'Choose Your Meme',
-    description: 'Two iconic meme games: Space Invaders and This Is Fine Runner. Choose your chaos and play classic games with meme twists!',
+    subtitle: 'AI Game Generator',
+    description: 'Create custom games from your imagination with AI. Generate unique gaming experiences tailored to your vision!',
     screenshotUrls: CONTACT_INFO.images.screenshots,
     primaryCategory: 'games',
     heroImageUrl: CONTACT_INFO.images.hero,
-    tagline: 'memes',
+    tagline: 'ai-games',
     ogImageUrl: CONTACT_INFO.images.hero
   },
   // Embed config for fc:miniapp meta tag
@@ -55,11 +55,11 @@ export const FARCSTER_CONFIG = {
     version: '1',
     imageUrl: CONTACT_INFO.images.hero,
     button: {
-      title: '🎮 Play Meme Games',
+      title: '🎮 Create Games',
       action: {
         type: 'launch_miniapp',
         url: `${CONTACT_INFO.website}/frame`,
-        name: 'Meme Games Hub',
+        name: 'GameForge Hub',
         splashImageUrl: CONTACT_INFO.images.icon,
         splashBackgroundColor: '#FF6B6B'
       }

@@ -1,24 +1,24 @@
 {
   "miniapp": {
-    "name": "Meme Games Hub",
+    "name": "GameForge Hub",
     "version": "1",
-    "iconUrl": "https://www.beuxbunk.com/games/itsFine-200x200.jpg",
+    "iconUrl": "https://www.beuxbunk.com/images/gameForgeLoading.jpg",
     "homeUrl": "https://launch.beuxbunk.com",
-    "imageUrl": "https://www.beuxbunk.com/games/itsFine-3x2.jpg",
-    "buttonTitle": "Play Meme Games",
-    "splashImageUrl": "https://www.beuxbunk.com/games/itsFine-200x200.jpg",
+    "imageUrl": "https://www.beuxbunk.com/images/gameForge.jpg",
+    "buttonTitle": "Play Games",
+    "splashImageUrl": "https://www.beuxbunk.com/images/gameForgeLoading.jpg",
     "splashBackgroundColor": "#FF6B6B",
     "webhookUrl": "https://launch.beuxbunk.com/api/webhook",
-    "subtitle": "Choose Your Meme",
-    "description": "Two iconic meme games: Space Invaders and This Is Fine Runner. Choose your chaos and play classic games with meme twists!",
+    "subtitle": "AI Game Generator",
+    "description": "Create custom games from your imagination with AI. Generate unique gaming experiences tailored to your vision!",
     "screenshotUrls": [
-      "https://www.beuxbunk.com/images/screenshot1.svg",
-      "https://www.beuxbunk.com/images/screenshot2.svg"
+      "https://www.beuxbunk.com/images/gameForge.jpg",
+      "https://www.beuxbunk.com/images/gameForgeLoading.jpg"
     ],
     "primaryCategory": "games",
-    "heroImageUrl": "https://www.beuxbunk.com/games/itsFine-3x2.jpg",
-    "tagline": "memes",
-    "ogImageUrl": "https://www.beuxbunk.com/games/itsFine-3x2.jpg"
+    "heroImageUrl": "https://www.beuxbunk.com/images/gameForge.jpg",
+    "tagline": "ai-games",
+    "ogImageUrl": "https://www.beuxbunk.com/images/gameForge.jpg"
   },
   "accountAssociation": {
     "header": "eyJmaWQiOjg4NjUwMywidHlwZSI6ImF1dGgiLCJrZXkiOiIweEQyRTc4MzlDOTI2QTlBMzQ5ODdFM0E4NjI2ODFDYTUyZmU2M2M0ZTYifQ",
