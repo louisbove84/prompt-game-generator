@@ -1,0 +1,7 @@
+{
+  "/api/frame-image/route": "app/api/frame-image/route.js",
+  "/api/frame/route": "app/api/frame/route.js",
+  "/_not-found/page": "app/_not-found/page.js",
+  "/page": "app/page.js",
+  "/frame/page": "app/frame/page.js"
+}

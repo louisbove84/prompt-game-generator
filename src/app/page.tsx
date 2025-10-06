@@ -1,10 +1,23 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { sdk } from '@farcaster/miniapp-sdk';
 
 export default function Home() {
   const [gamePrompt, setGamePrompt] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
+
+  useEffect(() => {
+    // Call sdk.actions.ready() after the app is fully loaded and ready to display
+    (async () => {
+      try {
+        await sdk.actions.ready();
+        console.log('SDK ready() called successfully');
+      } catch (error) {
+        console.error('SDK initialization error:', error);
+      }
+    })();
+  }, []);
 
   const handleGenerateGame = async () => {
     if (!gamePrompt.trim()) return;

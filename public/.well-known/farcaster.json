@@ -1,14 +1,14 @@
 {
-  "frame": {
+  "miniapp": {
     "name": "Meme Games Hub",
     "version": "1",
-    "iconUrl": "https://www.beuxbunk.com/itsFine-200x200.jpg",
-    "homeUrl": "https://www.beuxbunk.com",
-    "imageUrl": "https://www.beuxbunk.com/itsFine-3x2.jpg",
+    "iconUrl": "https://www.beuxbunk.com/games/itsFine-200x200.jpg",
+    "homeUrl": "https://launch.beuxbunk.com",
+    "imageUrl": "https://www.beuxbunk.com/games/itsFine-3x2.jpg",
     "buttonTitle": "Play Meme Games",
-    "splashImageUrl": "https://www.beuxbunk.com/itsFine-200x200.jpg",
+    "splashImageUrl": "https://www.beuxbunk.com/games/itsFine-200x200.jpg",
     "splashBackgroundColor": "#FF6B6B",
-    "webhookUrl": "https://www.beuxbunk.com/api/webhook",
+    "webhookUrl": "https://launch.beuxbunk.com/api/webhook",
     "subtitle": "Choose Your Meme",
     "description": "Two iconic meme games: Space Invaders and This Is Fine Runner. Choose your chaos and play classic games with meme twists!",
     "screenshotUrls": [
@@ -16,9 +16,9 @@
       "https://www.beuxbunk.com/images/screenshot2.svg"
     ],
     "primaryCategory": "games",
-    "heroImageUrl": "https://www.beuxbunk.com/itsFine-3x2.jpg",
+    "heroImageUrl": "https://www.beuxbunk.com/games/itsFine-3x2.jpg",
     "tagline": "memes",
-    "ogImageUrl": "https://www.beuxbunk.com/itsFine-3x2.jpg"
+    "ogImageUrl": "https://www.beuxbunk.com/games/itsFine-3x2.jpg"
   },
   "accountAssociation": {
     "header": "eyJmaWQiOjg4NjUwMywidHlwZSI6ImF1dGgiLCJrZXkiOiIweEQyRTc4MzlDOTI2QTlBMzQ5ODdFM0E4NjI2ODFDYTUyZmU2M2M0ZTYifQ",
