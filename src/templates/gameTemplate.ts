@@ -306,7 +306,7 @@ STYLING:
 
 CONTROLS:
 - **Desktop/Browser ONLY**: Arrow keys for movement, Space bar for action/jump
-  * Use \`window.addEventListener\` for keyboard controls
+  * Use window.addEventListener for keyboard controls
   * Arrow keys: ArrowUp, ArrowDown, ArrowLeft, ArrowRight
   * Space bar for action
 - **Mobile/Frame ONLY**: Touch controls (tap screen or on-screen buttons)

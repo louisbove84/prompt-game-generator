@@ -2,17 +2,23 @@
 
 import { useState, useEffect } from 'react';
 import { sdk } from '@farcaster/miniapp-sdk';
+import { useAccount } from 'wagmi';
 import { WalletConnect } from '../components/WalletConnect';
+import { PaymentModal } from '../components/PaymentModal';
+import { DemoGames } from '../components/DemoGames';
 
 // API route handles Grok API calls server-side to avoid CORS
 import DynamicGameLoader from '../components/DynamicGameLoader';
 
 export default function Home() {
+  const { isConnected } = useAccount();
   const [gamePrompt, setGamePrompt] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedGame, setGeneratedGame] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [generationStatus, setGenerationStatus] = useState<string>('');
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [hasPaid, setHasPaid] = useState(false);
 
   useEffect(() => {
     // Call sdk.actions.ready() after the app is fully loaded and ready to display
@@ -29,6 +35,12 @@ export default function Home() {
   const handleGenerateGame = async () => {
     if (!gamePrompt.trim()) {
       console.warn('⚠️ [Main] Empty prompt, aborting');
+      return;
+    }
+
+    // Check if user has paid
+    if (!hasPaid) {
+      setShowPaymentModal(true);
       return;
     }
     
@@ -93,6 +105,15 @@ export default function Home() {
     setError(null);
   };
 
+  const handlePaymentSuccess = () => {
+    setHasPaid(true);
+    setShowPaymentModal(false);
+    // Automatically start generation after payment
+    setTimeout(() => {
+      handleGenerateGame();
+    }, 1000);
+  };
+
   const playExistingGame = (gameType: 'runner' | 'spaceinvaders') => {
     window.location.href = `/frame?game=${gameType}`;
   };
@@ -101,12 +122,8 @@ export default function Home() {
   if (generatedGame) {
     return (
       <DynamicGameLoader 
-        gameCode={generatedGame} 
-        onBack={handleBackToGenerator}
-        onError={(err) => {
-          setError(err);
-          setGeneratedGame(null);
-        }}
+        gameCode={generatedGame}
+        onBackToGenerator={handleBackToGenerator}
       />
     );
   }
@@ -159,7 +176,7 @@ export default function Home() {
               ) : (
                 <div className="flex items-center justify-center space-x-2">
                   <span>🚀</span>
-                  <span>Generate Game</span>
+                  <span>{hasPaid ? 'Generate Game' : 'Pay $0.20 & Generate Game'}</span>
                 </div>
               )}
             </button>
@@ -178,44 +195,21 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Existing Games Section */}
-        <div className="text-center">
-          <h3 className="text-2xl font-bold text-white mb-8">
-            🎯 Or Try These Existing Games
-          </h3>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto">
-            {/* This Is Fine Game */}
-            <button
-              onClick={() => playExistingGame('runner')}
-              className="group bg-gradient-to-br from-orange-500 to-red-600 p-6 rounded-2xl hover:from-orange-600 hover:to-red-700 transition-all duration-300 transform hover:scale-105 border border-white/20"
-            >
-              <div className="text-4xl mb-3">🔥</div>
-              <h4 className="text-xl font-bold text-white mb-2">This Is Fine</h4>
-              <p className="text-orange-100 text-sm">
-                Navigate through chaos while everything burns around you!
-              </p>
-            </button>
-
-            {/* Space Invaders Game */}
-            <button
-              onClick={() => playExistingGame('spaceinvaders')}
-              className="group bg-gradient-to-br from-cyan-500 to-blue-600 p-6 rounded-2xl hover:from-cyan-600 hover:to-blue-700 transition-all duration-300 transform hover:scale-105 border border-white/20"
-            >
-              <div className="text-4xl mb-3">🚀</div>
-              <h4 className="text-xl font-bold text-white mb-2">Space Invaders</h4>
-              <p className="text-cyan-100 text-sm">
-                Classic arcade action - defend Earth from alien invasion!
-              </p>
-            </button>
-          </div>
-        </div>
+        {/* Demo Games Section */}
+        <DemoGames onPlayGame={playExistingGame} />
 
         {/* Footer */}
         <div className="text-center mt-12 text-gray-400">
           <p className="text-sm">Powered by AI • Built with Next.js • Deployed on Vercel</p>
         </div>
       </div>
+
+      {/* Payment Modal */}
+      <PaymentModal
+        isOpen={showPaymentModal}
+        onClose={() => setShowPaymentModal(false)}
+        onPaymentSuccess={handlePaymentSuccess}
+      />
     </div>
   );
 }
