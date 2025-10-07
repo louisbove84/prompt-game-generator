@@ -1,23 +1,17 @@
 'use client';
 
 import { useAccount, useConnect, useDisconnect, useSwitchChain } from 'wagmi';
-import { coinbaseWallet } from 'wagmi/connectors';
 import { base } from 'wagmi/chains';
 import { useState, useEffect } from 'react';
 
-// Create connector outside component to avoid recreation
-const coinbaseConnector = coinbaseWallet({
-  appName: 'AI Game Generator',
-  appLogoUrl: 'https://www.beuxbunk.com/images/gameForgeLoading.jpg',
-});
-
 export function WalletConnect() {
   const { address, isConnected, chainId } = useAccount();
-  const { connect, error, isPending } = useConnect();
+  const { connectors, connect, error, isPending } = useConnect();
   const { disconnect } = useDisconnect();
   const { switchChain } = useSwitchChain();
   const [isConnecting, setIsConnecting] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [showConnectors, setShowConnectors] = useState(false);
 
   // Detect mobile device
   useEffect(() => {
@@ -29,22 +23,14 @@ export function WalletConnect() {
     checkMobile();
   }, []);
 
-  const handleConnect = async () => {
+  const handleConnect = async (connector: any) => {
     try {
       setIsConnecting(true);
-      
-      // On mobile, use deep link to Coinbase Wallet app
-      if (isMobile) {
-        const dappUrl = window.location.href;
-        const wcUri = `https://go.cb-w.com/dapp?cb_url=${encodeURIComponent(dappUrl)}`;
-        window.location.href = wcUri;
-      } else {
-        // On desktop, use normal wagmi connection
-        await connect({ 
-          connector: coinbaseConnector,
-          chainId: base.id // Force Base network
-        });
-      }
+      await connect({ 
+        connector,
+        chainId: base.id // Force Base network
+      });
+      setShowConnectors(false);
     } catch (err) {
       console.error('Connection failed:', err);
     } finally {
@@ -96,17 +82,43 @@ export function WalletConnect() {
 
   return (
     <div className="flex flex-col items-center space-y-2">
-      <button
-        onClick={handleConnect}
-        disabled={isConnecting || isPending}
-        className="px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white rounded-lg transition-colors font-medium"
-      >
-        {isConnecting 
-          ? 'Opening Wallet...' 
-          : isMobile 
-            ? 'Open Coinbase Wallet App' 
-            : 'Connect Coinbase Wallet'}
-      </button>
+      {!showConnectors ? (
+        <button
+          onClick={() => setShowConnectors(true)}
+          disabled={isConnecting || isPending}
+          className="px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white rounded-lg transition-colors font-medium"
+        >
+          {isMobile ? 'Connect Wallet' : 'Connect Wallet'}
+        </button>
+      ) : (
+        <div className="flex flex-col space-y-2 w-full max-w-sm">
+          <p className="text-white text-sm text-center mb-2">
+            {isMobile ? 'Choose your wallet:' : 'Connect with:'}
+          </p>
+          {connectors.map((connector) => (
+            <button
+              key={connector.id}
+              onClick={() => handleConnect(connector)}
+              disabled={isConnecting || isPending}
+              className="px-6 py-3 bg-purple-600 hover:bg-purple-700 disabled:opacity-50 text-white rounded-lg transition-colors font-medium flex items-center justify-center space-x-2"
+            >
+              <span>
+                {connector.name === 'WalletConnect' 
+                  ? isMobile 
+                    ? '📱 Choose Wallet' 
+                    : '🔗 WalletConnect'
+                  : `🔵 ${connector.name}`}
+              </span>
+            </button>
+          ))}
+          <button
+            onClick={() => setShowConnectors(false)}
+            className="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors text-sm"
+          >
+            Cancel
+          </button>
+        </div>
+      )}
       <div className="text-center">
         <p className="text-green-400 text-xs mb-1">
           🔒 Secure Connection
