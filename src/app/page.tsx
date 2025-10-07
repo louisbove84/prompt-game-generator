@@ -3,12 +3,8 @@
 import { useState, useEffect } from 'react';
 import { sdk } from '@farcaster/miniapp-sdk';
 import { useAccount } from 'wagmi';
-import { WalletConnect } from '../components/WalletConnect';
-import { PaymentModal } from '../components/PaymentModal';
-import { DemoGames } from '../components/DemoGames';
-
-// API route handles Grok API calls server-side to avoid CORS
-import DynamicGameLoader from '../components/DynamicGameLoader';
+import { WalletConnect, PaymentModal } from '../components/payments';
+import { DemoGames, DynamicGameLoader } from '../components/games';
 
 export default function Home() {
   const { isConnected } = useAccount();

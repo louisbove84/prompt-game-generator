@@ -46,7 +46,7 @@ export function PaymentModal({ isOpen, onClose, onPaymentSuccess }: PaymentModal
         ],
         functionName: 'transfer',
         args: [
-          '0x742d35Cc6634C0532925a3b8D0C0C1b2C4C5C6C7', // Your recipient address
+          '0xD2E7839C926A9A34987E3A862681Ca52fe63c4e6', // Your recipient address
           parseEther('0.20') // 0.20 USDC (6 decimals)
         ],
       });

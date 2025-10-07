@@ -2,11 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { sdk } from '@farcaster/miniapp-sdk';
-import SpaceInvadersGame from '../../components/SpaceInvadersGame';
-import ThisIsFineGame from '../../components/ThisIsFineGame';
-import { WalletConnect } from '../../components/WalletConnect';
+import { SpaceInvadersGame, ThisIsFineGame, DynamicGameLoader } from '../../components/games';
+import { WalletConnect } from '../../components/payments';
 import { generateGame } from '../../services/grokAPI';
-import DynamicGameLoader from '../../components/DynamicGameLoader';
 
 export default function FramePage() {
   const [gamePrompt, setGamePrompt] = useState('');
