@@ -36,7 +36,7 @@ export const FARCSTER_CONFIG = {
     name: 'GameForge Hub',
     version: '1',
     iconUrl: CONTACT_INFO.images.icon,
-    homeUrl: CONTACT_INFO.website,
+    homeUrl: `${CONTACT_INFO.website}/frame`,
     imageUrl: CONTACT_INFO.images.hero,
     buttonTitle: 'Game Forge: Use LLMs to Create Arcade Games',
     splashImageUrl: CONTACT_INFO.images.icon,

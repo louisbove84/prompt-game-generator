@@ -15,7 +15,7 @@ const FARCSTER_CONFIG = {
     name: 'GameForge Hub',
     version: '1',
     iconUrl: 'https://www.beuxbunk.com/images/gameForgeLoading.jpg',
-    homeUrl: CONTACT_INFO.website,
+    homeUrl: `${CONTACT_INFO.website}/frame`,
     imageUrl: 'https://www.beuxbunk.com/images/gameForge.jpg',
     buttonTitle: 'Game Forge: Use LLMs to Create Arcade Games',
     splashImageUrl: 'https://www.beuxbunk.com/images/gameForgeLoading.jpg',
