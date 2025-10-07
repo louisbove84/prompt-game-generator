@@ -29,12 +29,14 @@ export const CONTACT_INFO = {
   }
 } as const;
 
-// Farcaster Mini App Configuration - Single source of truth
+// Farcaster Mini App Configuration
+// NOTE: The PRIMARY source of truth is public/.well-known/farcaster.json
+// This config is for reference and embedding in meta tags
 export const FARCSTER_CONFIG = {
-  // Manifest config for .well-known/farcaster.json
+  // Manifest config - should match public/.well-known/farcaster.json
   manifest: {
     name: 'GameForge Hub',
-    version: '2',
+    version: '3', // Update in public/.well-known/farcaster.json to change
     iconUrl: CONTACT_INFO.images.icon,
     homeUrl: `${CONTACT_INFO.website}/frame`,
     imageUrl: CONTACT_INFO.images.hero,

@@ -1,7 +1,7 @@
 {
   "miniapp": {
     "name": "GameForge Hub",
-    "version": "2",
+    "version": "3",
     "iconUrl": "https://www.beuxbunk.com/images/gameForgeLoading.jpg",
     "homeUrl": "https://launch.beuxbunk.com/frame",
     "imageUrl": "https://www.beuxbunk.com/images/gameForge.jpg",
