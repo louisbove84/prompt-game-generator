@@ -99,6 +99,7 @@ export default function Home() {
   const handleBackToGenerator = () => {
     setGeneratedGame(null);
     setError(null);
+    setHasPaid(false); // Reset payment requirement
   };
 
   const handlePaymentSuccess = () => {
