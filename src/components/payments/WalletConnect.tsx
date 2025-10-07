@@ -1,28 +1,35 @@
 'use client';
 
 import { useAccount, useConnect, useDisconnect, useSwitchChain } from 'wagmi';
-import { coinbaseWallet } from 'wagmi/connectors';
 import { base } from 'wagmi/chains';
-import { useState } from 'react';
-
-// Create connector outside component to avoid recreation
-const coinbaseConnector = coinbaseWallet({
-  appName: 'AI Game Generator',
-  appLogoUrl: 'https://www.beuxbunk.com/images/gameForgeLoading.jpg',
-});
+import { useState, useEffect } from 'react';
 
 export function WalletConnect() {
   const { address, isConnected, chainId } = useAccount();
-  const { connect, error, isPending } = useConnect();
+  const { connectors, connect, error, isPending } = useConnect();
   const { disconnect } = useDisconnect();
   const { switchChain } = useSwitchChain();
   const [isConnecting, setIsConnecting] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
-  const handleConnect = async () => {
+  useEffect(() => {
+    // Detect if on mobile
+    const checkMobile = () => {
+      const mobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || 
+                     window.innerWidth <= 768;
+      setIsMobile(mobile);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  const handleConnect = async (connector: any) => {
     try {
       setIsConnecting(true);
       await connect({ 
-        connector: coinbaseConnector,
+        connector,
         chainId: base.id // Force Base network
       });
     } catch (err) {
@@ -75,15 +82,32 @@ export function WalletConnect() {
   }
 
   return (
-    <div className="flex flex-col items-center space-y-2">
-      <button
-        onClick={handleConnect}
-        disabled={isConnecting || isPending}
-        className="px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white rounded-lg transition-colors font-medium"
-      >
-        {isConnecting ? 'Connecting...' : 'Connect Coinbase Wallet'}
-      </button>
-      <div className="text-center">
+    <div className="flex flex-col items-center space-y-3 w-full max-w-md">
+      <div className="text-white text-center mb-2">
+        <p className="text-lg font-semibold">Connect Wallet</p>
+        <p className="text-xs text-gray-400 mt-1">
+          {isMobile ? 'Select your mobile wallet' : 'Choose your wallet to continue'}
+        </p>
+      </div>
+
+      {connectors.map((connector) => (
+        <button
+          key={connector.id}
+          onClick={() => handleConnect(connector)}
+          disabled={isConnecting || isPending || !connector.ready}
+          className="w-full px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg transition-colors font-medium flex items-center justify-center space-x-2"
+        >
+          <span>
+            {isConnecting ? 'Connecting...' : 
+             connector.name === 'Coinbase Wallet' ? '🔵 Coinbase Wallet' :
+             connector.name === 'WalletConnect' ? '📱 WalletConnect' :
+             connector.name === 'Injected' ? '🦊 Browser Wallet' :
+             connector.name}
+          </span>
+        </button>
+      ))}
+
+      <div className="text-center mt-4">
         <p className="text-green-400 text-xs mb-1">
           🔒 Secure Connection
         </p>
@@ -91,8 +115,9 @@ export function WalletConnect() {
           Your wallet is safe - no transactions without your approval
         </p>
       </div>
+
       {error && (
-        <div className="text-red-400 text-sm text-center">
+        <div className="text-red-400 text-sm text-center mt-2">
           Connection failed: {error.message}
         </div>
       )}

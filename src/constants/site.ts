@@ -40,7 +40,7 @@ export const FARCSTER_CONFIG = {
     imageUrl: CONTACT_INFO.images.hero,
     buttonTitle: 'Game Forge: Use LLMs to Create Arcade Games',
     splashImageUrl: CONTACT_INFO.images.icon,
-    splashBackgroundColor: '#FF6B6B',
+    splashBackgroundColor: '#1a1a2e',
     webhookUrl: `${CONTACT_INFO.website}/api/webhook`,
     subtitle: 'Create Games with AI',
     description: 'AI-powered game generator. Pay $0.20 USDC to create custom arcade games or play free demos. Built on Base network.',
@@ -61,7 +61,7 @@ export const FARCSTER_CONFIG = {
         url: `${CONTACT_INFO.website}/frame`,
         name: 'GameForge Hub',
         splashImageUrl: CONTACT_INFO.images.icon,
-        splashBackgroundColor: '#FF6B6B'
+        splashBackgroundColor: '#1a1a2e'
       }
     }
   }

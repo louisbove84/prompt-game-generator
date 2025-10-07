@@ -4,7 +4,7 @@ import { WagmiProvider } from 'wagmi';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { createConfig, http } from 'wagmi';
 import { base, baseSepolia } from 'wagmi/chains';
-import { coinbaseWallet } from 'wagmi/connectors';
+import { coinbaseWallet, injected, walletConnect } from 'wagmi/connectors';
 import { OnchainKitProvider } from '@coinbase/onchainkit';
 
 // Create a query client
@@ -15,9 +15,20 @@ const config = createConfig({
   chains: [base, baseSepolia],
   connectors: [
     coinbaseWallet({
-      appName: 'AI Game Generator',
+      appName: 'GameForge Hub',
       appLogoUrl: 'https://www.beuxbunk.com/images/gameForgeLoading.jpg',
     }),
+    walletConnect({
+      projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || 'demo',
+      showQrModal: true,
+      metadata: {
+        name: 'GameForge Hub',
+        description: 'AI-powered game generator on Base',
+        url: 'https://launch.beuxbunk.com',
+        icons: ['https://www.beuxbunk.com/images/gameForgeLoading.jpg']
+      }
+    }),
+    injected(),
   ],
   transports: {
     [base.id]: http(process.env.NEXT_PUBLIC_BASE_RPC_URL),

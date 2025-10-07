@@ -19,7 +19,7 @@ const FARCSTER_CONFIG = {
     imageUrl: 'https://www.beuxbunk.com/images/gameForge.jpg',
     buttonTitle: 'Game Forge: Use LLMs to Create Arcade Games',
     splashImageUrl: 'https://www.beuxbunk.com/images/gameForgeLoading.jpg',
-    splashBackgroundColor: '#FF6B6B',
+    splashBackgroundColor: '#1a1a2e',
     webhookUrl: `${CONTACT_INFO.website}/api/webhook`,
     subtitle: 'Create Games with AI',
     description: 'AI-powered game generator. Pay $0.20 USDC to create custom arcade games or play free demos. Built on Base network.',
