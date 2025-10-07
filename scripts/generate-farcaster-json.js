@@ -13,7 +13,7 @@ const CONTACT_INFO = {
 const FARCSTER_CONFIG = {
   miniapp: {
     name: 'GameForge Hub',
-    version: '1',
+    version: '2',
     iconUrl: 'https://www.beuxbunk.com/images/gameForgeLoading.jpg',
     homeUrl: `${CONTACT_INFO.website}/frame`,
     imageUrl: 'https://www.beuxbunk.com/images/gameForge.jpg',
@@ -21,8 +21,8 @@ const FARCSTER_CONFIG = {
     splashImageUrl: 'https://www.beuxbunk.com/images/gameForgeLoading.jpg',
     splashBackgroundColor: '#FF6B6B',
     webhookUrl: `${CONTACT_INFO.website}/api/webhook`,
-    subtitle: 'AI Game Generator',
-    description: 'Create custom games from your imagination with AI. Generate unique gaming experiences tailored to your vision!',
+    subtitle: 'Create Games with AI',
+    description: 'AI-powered game generator. Pay $0.20 USDC to create custom arcade games or play free demos. Built on Base network.',
     screenshotUrls: [
       'https://www.beuxbunk.com/images/gameForge.jpg',
       'https://www.beuxbunk.com/images/gameForgeLoading.jpg'

@@ -34,7 +34,7 @@ export const FARCSTER_CONFIG = {
   // Manifest config for .well-known/farcaster.json
   manifest: {
     name: 'GameForge Hub',
-    version: '1',
+    version: '2',
     iconUrl: CONTACT_INFO.images.icon,
     homeUrl: `${CONTACT_INFO.website}/frame`,
     imageUrl: CONTACT_INFO.images.hero,
@@ -42,8 +42,8 @@ export const FARCSTER_CONFIG = {
     splashImageUrl: CONTACT_INFO.images.icon,
     splashBackgroundColor: '#FF6B6B',
     webhookUrl: `${CONTACT_INFO.website}/api/webhook`,
-    subtitle: 'AI Game Generator',
-    description: 'Create custom games from your imagination with AI. Generate unique gaming experiences tailored to your vision!',
+    subtitle: 'Create Games with AI',
+    description: 'AI-powered game generator. Pay $0.20 USDC to create custom arcade games or play free demos. Built on Base network.',
     screenshotUrls: CONTACT_INFO.images.screenshots,
     primaryCategory: 'games',
     heroImageUrl: CONTACT_INFO.images.hero,
