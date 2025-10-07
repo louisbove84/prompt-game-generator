@@ -9,29 +9,24 @@ export function WalletConnect() {
   const { connectors, connect, error, isPending } = useConnect();
   const { disconnect } = useDisconnect();
   const { switchChain } = useSwitchChain();
+  const [showModal, setShowModal] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
 
-  useEffect(() => {
-    // Detect if on mobile
-    const checkMobile = () => {
-      const mobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || 
-                     window.innerWidth <= 768;
-      setIsMobile(mobile);
-    };
-    
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
+  const handleConnectClick = () => {
+    setShowModal(true);
+  };
 
   const handleConnect = async (connector: any) => {
     try {
       setIsConnecting(true);
+      console.log('Connecting with:', connector.name);
+      
       await connect({ 
         connector,
-        chainId: base.id // Force Base network
+        chainId: base.id
       });
+      
+      setShowModal(false);
     } catch (err) {
       console.error('Connection failed:', err);
     } finally {
@@ -46,6 +41,9 @@ export function WalletConnect() {
       console.error('Failed to switch to Base:', err);
     }
   };
+
+  // Get Coinbase Wallet connector
+  const coinbaseConnector = connectors.find(c => c.name === 'Coinbase Wallet');
 
   if (isConnected && address) {
     const isOnBase = chainId === base.id;
@@ -82,45 +80,77 @@ export function WalletConnect() {
   }
 
   return (
-    <div className="flex flex-col items-center space-y-3 w-full max-w-md">
-      <div className="text-white text-center mb-2">
-        <p className="text-lg font-semibold">Connect Wallet</p>
-        <p className="text-xs text-gray-400 mt-1">
-          {isMobile ? 'Select your mobile wallet' : 'Choose your wallet to continue'}
-        </p>
-      </div>
-
-      {connectors.map((connector) => (
+    <>
+      {/* Single Connect Button */}
+      <div className="flex flex-col items-center space-y-2">
         <button
-          key={connector.id}
-          onClick={() => handleConnect(connector)}
-          disabled={isConnecting || isPending || !connector.ready}
-          className="w-full px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg transition-colors font-medium flex items-center justify-center space-x-2"
+          onClick={handleConnectClick}
+          disabled={isPending}
+          className="px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white rounded-lg transition-colors font-medium"
         >
-          <span>
-            {isConnecting ? 'Connecting...' : 
-             connector.name === 'Coinbase Wallet' ? '🔵 Coinbase Wallet' :
-             connector.name === 'WalletConnect' ? '📱 WalletConnect' :
-             connector.name === 'Injected' ? '🦊 Browser Wallet' :
-             connector.name}
-          </span>
+          Connect Wallet
         </button>
-      ))}
-
-      <div className="text-center mt-4">
-        <p className="text-green-400 text-xs mb-1">
-          🔒 Secure Connection
-        </p>
-        <p className="text-gray-400 text-xs">
-          Your wallet is safe - no transactions without your approval
-        </p>
+        <div className="text-center">
+          <p className="text-green-400 text-xs mb-1">
+            🔒 Secure Connection
+          </p>
+          <p className="text-gray-400 text-xs">
+            Your wallet is safe - no transactions without your approval
+          </p>
+        </div>
       </div>
 
-      {error && (
-        <div className="text-red-400 text-sm text-center mt-2">
-          Connection failed: {error.message}
+      {/* Modal */}
+      {showModal && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50"
+          onClick={() => setShowModal(false)}
+        >
+          <div 
+            className="bg-gray-900 rounded-xl p-6 max-w-md w-full mx-4 border border-gray-700"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-xl font-bold text-white">Connect Wallet</h3>
+              <button
+                onClick={() => setShowModal(false)}
+                className="text-gray-400 hover:text-white text-2xl"
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              {coinbaseConnector && (
+                <button
+                  onClick={() => handleConnect(coinbaseConnector)}
+                  disabled={isConnecting || !coinbaseConnector.ready}
+                  className="w-full px-6 py-4 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg transition-colors font-medium flex items-center justify-center space-x-3"
+                >
+                  <span className="text-2xl">🔵</span>
+                  <span>{isConnecting ? 'Connecting...' : 'Coinbase Wallet'}</span>
+                </button>
+              )}
+
+              {!coinbaseConnector && (
+                <div className="text-center text-gray-400 py-4">
+                  No wallets available
+                </div>
+              )}
+            </div>
+
+            <div className="mt-4 text-center text-xs text-gray-500">
+              Connect your wallet to create games with USDC payments
+            </div>
+
+            {error && (
+              <div className="mt-4 text-red-400 text-sm text-center">
+                {error.message}
+              </div>
+            )}
+          </div>
         </div>
       )}
-    </div>
+    </>
   );
 }
