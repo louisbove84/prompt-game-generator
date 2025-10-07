@@ -16,6 +16,11 @@ export default function Home() {
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [hasPaid, setHasPaid] = useState(false);
 
+  // Debug log for payment status
+  useEffect(() => {
+    console.log('💰 Payment Status:', hasPaid ? 'PAID ✅' : 'NOT PAID ❌');
+  }, [hasPaid]);
+
   useEffect(() => {
     // Call sdk.actions.ready() after the app is fully loaded and ready to display
     (async () => {
