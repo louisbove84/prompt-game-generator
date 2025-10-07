@@ -55,7 +55,7 @@ export const FARCSTER_CONFIG = {
     version: '1',
     imageUrl: CONTACT_INFO.images.hero,
     button: {
-      title: '🎮 Game Forge: Use LLMs to Create Arcade Games',
+      title: '🎮 Create AI Games',
       action: {
         type: 'launch_miniapp',
         url: `${CONTACT_INFO.website}/frame`,
