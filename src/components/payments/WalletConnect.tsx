@@ -12,6 +12,15 @@ export function WalletConnect() {
   const [showModal, setShowModal] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
 
+  // Debug: Log connectors
+  useEffect(() => {
+    console.log('Available connectors:', connectors.map(c => ({ 
+      name: c.name, 
+      id: c.id, 
+      ready: c.ready 
+    })));
+  }, [connectors]);
+
   const handleConnectClick = () => {
     setShowModal(true);
   };
@@ -19,16 +28,24 @@ export function WalletConnect() {
   const handleConnect = async (connector: any) => {
     try {
       setIsConnecting(true);
-      console.log('Connecting with:', connector.name);
+      console.log('🔌 Attempting to connect with:', connector.name, connector.id);
+      console.log('Connector ready?', connector.ready);
+      console.log('Chain ID:', base.id);
       
-      await connect({ 
+      const result = await connect({ 
         connector,
         chainId: base.id
       });
       
+      console.log('✅ Connection result:', result);
       setShowModal(false);
-    } catch (err) {
-      console.error('Connection failed:', err);
+    } catch (err: any) {
+      console.error('❌ Connection failed:', err);
+      console.error('Error details:', {
+        message: err.message,
+        code: err.code,
+        details: err.details
+      });
     } finally {
       setIsConnecting(false);
     }
@@ -121,20 +138,29 @@ export function WalletConnect() {
             </div>
 
             <div className="space-y-3">
-              {coinbaseConnector && (
-                <button
-                  onClick={() => handleConnect(coinbaseConnector)}
-                  disabled={isConnecting || !coinbaseConnector.ready}
-                  className="w-full px-6 py-4 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg transition-colors font-medium flex items-center justify-center space-x-3"
-                >
-                  <span className="text-2xl">🔵</span>
-                  <span>{isConnecting ? 'Connecting...' : 'Coinbase Wallet'}</span>
-                </button>
-              )}
-
-              {!coinbaseConnector && (
+              {coinbaseConnector ? (
+                <>
+                  <button
+                    onClick={() => handleConnect(coinbaseConnector)}
+                    disabled={isConnecting || !coinbaseConnector.ready}
+                    className="w-full px-6 py-4 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg transition-colors font-medium flex items-center justify-center space-x-3"
+                  >
+                    <span className="text-2xl">🔵</span>
+                    <span>{isConnecting ? 'Connecting...' : 'Coinbase Wallet'}</span>
+                  </button>
+                  {!coinbaseConnector.ready && (
+                    <div className="text-xs text-yellow-400 text-center">
+                      Wallet not detected - make sure Coinbase Wallet is installed
+                    </div>
+                  )}
+                </>
+              ) : (
                 <div className="text-center text-gray-400 py-4">
-                  No wallets available
+                  No wallets available. Connectors: {connectors.length}
+                  <br />
+                  <span className="text-xs">
+                    {connectors.map(c => c.name).join(', ') || 'None'}
+                  </span>
                 </div>
               )}
             </div>

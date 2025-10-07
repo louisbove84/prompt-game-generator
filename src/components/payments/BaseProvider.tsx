@@ -35,7 +35,7 @@ export function BaseProvider({ children }: BaseProviderProps) {
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
         <OnchainKitProvider
-          apiKey={process.env.NEXT_PUBLIC_BASE_API_KEY}
+          apiKey={process.env.NEXT_PUBLIC_ONCHAINKIT_API_KEY}
           chain={base}
         >
           {children}
