@@ -104,10 +104,7 @@ export default function Home() {
   const handlePaymentSuccess = () => {
     setHasPaid(true);
     setShowPaymentModal(false);
-    // Automatically start generation after payment
-    setTimeout(() => {
-      handleGenerateGame();
-    }, 1000);
+    // Payment successful - user can now click generate button
   };
 
   const playExistingGame = (gameType: 'runner' | 'spaceinvaders') => {
@@ -172,7 +169,7 @@ export default function Home() {
               ) : (
                 <div className="flex items-center justify-center space-x-2">
                   <span>🚀</span>
-                  <span>{hasPaid ? 'Generate Game' : 'Pay $0.20 USDC & Generate Game'}</span>
+                  <span>{hasPaid ? 'Generate Game' : 'Pay $0.20 USDC to Unlock Generation'}</span>
                 </div>
               )}
             </button>
