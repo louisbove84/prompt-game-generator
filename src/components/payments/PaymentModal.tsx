@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useAccount, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
-import { parseEther } from 'viem';
+import { parseUnits } from 'viem';
 
 interface PaymentModalProps {
   isOpen: boolean;
@@ -47,7 +47,7 @@ export function PaymentModal({ isOpen, onClose, onPaymentSuccess }: PaymentModal
         functionName: 'transfer',
         args: [
           '0xD2E7839C926A9A34987E3A862681Ca52fe63c4e6', // Your recipient address
-          parseEther('0.20') // 0.20 USDC (6 decimals)
+          parseUnits('0.20', 6) // 0.20 USDC (6 decimals)
         ],
       });
     } catch (err) {

@@ -172,7 +172,7 @@ export default function Home() {
               ) : (
                 <div className="flex items-center justify-center space-x-2">
                   <span>🚀</span>
-                  <span>{hasPaid ? 'Generate Game' : 'Pay $0.20 & Generate Game'}</span>
+                  <span>{hasPaid ? 'Generate Game' : 'Pay $0.20 USDC & Generate Game'}</span>
                 </div>
               )}
             </button>
