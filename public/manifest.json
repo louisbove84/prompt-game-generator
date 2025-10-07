@@ -1,7 +1,7 @@
 {
-  "name": "AI Game Generator",
-  "short_name": "GameGen",
-  "description": "Create custom games from your imagination with AI",
+  "name": "GameForge Hub",
+  "short_name": "GameForge",
+  "description": "AI-powered game generator. Pay $0.20 USDC to create custom arcade games or play free demos.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#1a1a2e",
