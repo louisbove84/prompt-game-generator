@@ -123,7 +123,7 @@ export default function Home() {
     return (
       <DynamicGameLoader 
         gameCode={generatedGame}
-        onBackToGenerator={handleBackToGenerator}
+        onBack={handleBackToGenerator}
       />
     );
   }
