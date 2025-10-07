@@ -10,7 +10,7 @@ import { OnchainKitProvider } from '@coinbase/onchainkit';
 // Create a query client
 const queryClient = new QueryClient();
 
-// Configure wagmi
+// Configure wagmi with Base as primary chain
 const config = createConfig({
   chains: [base, baseSepolia],
   connectors: [
@@ -23,6 +23,7 @@ const config = createConfig({
     [base.id]: http(process.env.NEXT_PUBLIC_BASE_RPC_URL),
     [baseSepolia.id]: http(process.env.NEXT_PUBLIC_BASE_SEPOLIA_RPC_URL),
   },
+  ssr: true,
 });
 
 interface BaseProviderProps {

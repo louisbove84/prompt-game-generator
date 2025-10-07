@@ -19,89 +19,52 @@ export async function GET() {
         </filter>
       </defs>
       
+      <!-- Background -->
       <rect width="1200" height="630" fill="url(#bg)"/>
       
-      <!-- AI sparkles background -->
-      <g fill="#00D4FF" opacity="0.8">
-        ${Array.from({ length: 30 }, () => {
-          const x = Math.random() * 1200;
-          const y = Math.random() * 630;
-          const size = Math.random() * 4 + 2;
-          return `<circle cx="${x}" cy="${y}" r="${size}" fill="#00D4FF"/>`;
-        }).join('')}
-      </g>
+      <!-- Main container -->
+      <rect x="50" y="50" width="1100" height="530" rx="20" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.1)" stroke-width="2"/>
       
-      <!-- Main title -->
-      <text x="600" y="180" text-anchor="middle" font-family="Arial, sans-serif" font-size="64" font-weight="bold" fill="#FFFFFF" stroke="#00D4FF" stroke-width="3" filter="url(#glow)">
-        GAMEFORGE HUB
+      <!-- Title -->
+      <text x="600" y="150" text-anchor="middle" fill="#ffffff" font-family="Arial, sans-serif" font-size="48" font-weight="bold" filter="url(#glow)">
+        🎮 AI Game Generator
       </text>
       
       <!-- Subtitle -->
-      <text x="600" y="240" text-anchor="middle" font-family="Arial, sans-serif" font-size="28" fill="#00D4FF" stroke="#000" stroke-width="2">
-        Create Your Games with AI! 🤖
+      <text x="600" y="200" text-anchor="middle" fill="#a0a0a0" font-family="Arial, sans-serif" font-size="24">
+        Create Custom Games with AI
       </text>
       
-      <!-- Game Creation Options -->
+      <!-- Features -->
+      <g transform="translate(200, 280)">
+        <circle cx="0" cy="0" r="8" fill="#4ade80"/>
+        <text x="30" y="5" fill="#ffffff" font-family="Arial, sans-serif" font-size="20">Pay $0.20 USDC to generate custom games</text>
+      </g>
+      
       <g transform="translate(200, 320)">
-        <!-- AI Game Generator section -->
-        <rect x="0" y="0" width="200" height="100" rx="15" fill="#00D4FF" stroke="#FFFFFF" stroke-width="4"/>
-        <text x="100" y="35" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#FFFFFF" font-weight="bold">
-          🤖 AI GAME
-        </text>
-        <text x="100" y="60" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#FFFFFF" font-weight="bold">
-          GENERATOR
-        </text>
-        <text x="100" y="85" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#E6F7FF">
-          Create with AI!
-        </text>
+        <circle cx="0" cy="0" r="8" fill="#60a5fa"/>
+        <text x="30" y="5" fill="#ffffff" font-family="Arial, sans-serif" font-size="20">Play free demo games instantly</text>
       </g>
       
-      <g transform="translate(800, 320)">
-        <!-- Custom Games section -->
-        <rect x="0" y="0" width="200" height="100" rx="15" fill="#4ECDC4" stroke="#FFFFFF" stroke-width="4"/>
-        <text x="100" y="35" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#FFFFFF" font-weight="bold">
-          🎮 CUSTOM
-        </text>
-        <text x="100" y="60" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#FFFFFF" font-weight="bold">
-          GAMES
-        </text>
-        <text x="100" y="85" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#E6F7FF">
-          Your vision!
-        </text>
+      <g transform="translate(200, 360)">
+        <circle cx="0" cy="0" r="8" fill="#f472b6"/>
+        <text x="30" y="5" fill="#ffffff" font-family="Arial, sans-serif" font-size="20">Built on Base network for fast, cheap transactions</text>
       </g>
       
-      <!-- Game creation preview -->
-      <g transform="translate(300, 480)">
-        <!-- AI Brain/Neural Network -->
-        <circle cx="20" cy="20" r="15" fill="#00D4FF" opacity="0.8"/>
-        <circle cx="40" cy="15" r="8" fill="#4ECDC4" opacity="0.6"/>
-        <circle cx="50" cy="25" r="6" fill="#00D4FF" opacity="0.4"/>
-        <circle cx="35" cy="35" r="10" fill="#4ECDC4" opacity="0.7"/>
-        <!-- Connection lines -->
-        <line x1="20" y1="20" x2="40" y2="15" stroke="#00D4FF" stroke-width="2" opacity="0.6"/>
-        <line x1="40" y1="15" x2="50" y2="25" stroke="#4ECDC4" stroke-width="2" opacity="0.6"/>
-        <line x1="20" y1="20" x2="35" y2="35" stroke="#00D4FF" stroke-width="2" opacity="0.6"/>
+      <!-- Game icons -->
+      <g transform="translate(800, 300)">
+        <rect x="-30" y="-30" width="60" height="60" rx="10" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.2)"/>
+        <text x="0" y="5" text-anchor="middle" fill="#ffffff" font-size="24">🎯</text>
       </g>
       
-      <g transform="translate(700, 480)">
-        <!-- Game controller -->
-        <rect x="10" y="15" width="40" height="20" rx="10" fill="#333" stroke="#00D4FF" stroke-width="2"/>
-        <circle cx="20" cy="25" r="3" fill="#00D4FF"/>
-        <circle cx="40" cy="25" r="3" fill="#00D4FF"/>
-        <rect x="25" y="20" width="10" height="10" rx="2" fill="#4ECDC4"/>
-        <!-- Game elements -->
-        <rect x="60" y="10" width="8" height="8" fill="#00FF00"/>
-        <rect x="70" y="15" width="8" height="8" fill="#FF6B6B"/>
-        <rect x="80" y="12" width="8" height="8" fill="#FFD700"/>
+      <g transform="translate(900, 300)">
+        <rect x="-30" y="-30" width="60" height="60" rx="10" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.2)"/>
+        <text x="0" y="5" text-anchor="middle" fill="#ffffff" font-size="24">🚀</text>
       </g>
       
-      <!-- Frame indicator -->
-      <rect x="20" y="20" width="280" height="60" rx="15" fill="rgba(0, 212, 255, 0.3)" stroke="#00D4FF" stroke-width="3"/>
-      <text x="160" y="45" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#FFFFFF" font-weight="bold" stroke="#000" stroke-width="1">
-        🎮 Farcaster Frame
-      </text>
-      <text x="160" y="65" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#E6F7FF">
-        Create amazing games with AI!
+      <!-- Bottom text -->
+      <text x="600" y="500" text-anchor="middle" fill="#666666" font-family="Arial, sans-serif" font-size="18">
+        Powered by AI • Built with Next.js • Deployed on Vercel
       </text>
     </svg>
   `;
@@ -109,7 +72,7 @@ export async function GET() {
   return new NextResponse(svg, {
     headers: {
       'Content-Type': 'image/svg+xml',
-      'Cache-Control': 'public, max-age=3600',
+      'Cache-Control': 'public, max-age=31536000, immutable',
     },
   });
 }

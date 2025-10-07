@@ -1,7 +1,8 @@
 'use client';
 
-import { useAccount, useConnect, useDisconnect } from 'wagmi';
+import { useAccount, useConnect, useDisconnect, useSwitchChain } from 'wagmi';
 import { coinbaseWallet } from 'wagmi/connectors';
+import { base } from 'wagmi/chains';
 import { useState } from 'react';
 
 // Create connector outside component to avoid recreation
@@ -11,15 +12,19 @@ const coinbaseConnector = coinbaseWallet({
 });
 
 export function WalletConnect() {
-  const { address, isConnected } = useAccount();
+  const { address, isConnected, chainId } = useAccount();
   const { connect, error, isPending } = useConnect();
   const { disconnect } = useDisconnect();
+  const { switchChain } = useSwitchChain();
   const [isConnecting, setIsConnecting] = useState(false);
 
   const handleConnect = async () => {
     try {
       setIsConnecting(true);
-      await connect({ connector: coinbaseConnector });
+      await connect({ 
+        connector: coinbaseConnector,
+        chainId: base.id // Force Base network
+      });
     } catch (err) {
       console.error('Connection failed:', err);
     } finally {
@@ -27,18 +32,41 @@ export function WalletConnect() {
     }
   };
 
+  const handleSwitchToBase = async () => {
+    try {
+      await switchChain({ chainId: base.id });
+    } catch (err) {
+      console.error('Failed to switch to Base:', err);
+    }
+  };
+
   if (isConnected && address) {
+    const isOnBase = chainId === base.id;
+    
     return (
-      <div className="flex items-center space-x-4">
-        <div className="text-white">
+      <div className="flex flex-col items-center space-y-3">
+        <div className="text-white text-center">
           <div className="text-sm text-gray-300">Connected as:</div>
           <div className="font-mono text-sm">
             {`${address.slice(0, 6)}...${address.slice(-4)}`}
           </div>
+          <div className={`text-xs mt-1 ${isOnBase ? 'text-green-400' : 'text-yellow-400'}`}>
+            Network: {isOnBase ? 'Base ✅' : 'Wrong Network ⚠️'}
+          </div>
         </div>
+        
+        {!isOnBase && (
+          <button
+            onClick={handleSwitchToBase}
+            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors text-sm"
+          >
+            Switch to Base Network
+          </button>
+        )}
+        
         <button
           onClick={() => disconnect()}
-          className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
+          className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors text-sm"
         >
           Disconnect
         </button>
