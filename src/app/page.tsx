@@ -108,6 +108,8 @@ export default function Home() {
   };
 
   const handlePaymentSuccess = () => {
+    console.log('💳 handlePaymentSuccess called!');
+    console.trace('Payment success call stack:');
     setHasPaid(true);
     setShowPaymentModal(false);
     // Payment successful - user can now click generate button

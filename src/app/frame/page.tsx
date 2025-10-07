@@ -2,16 +2,20 @@
 
 import { useState, useEffect } from 'react';
 import { sdk } from '@farcaster/miniapp-sdk';
+import { useAccount } from 'wagmi';
 import { SpaceInvadersGame, ThisIsFineGame, DynamicGameLoader } from '../../components/games';
-import { WalletConnect } from '../../components/payments';
-import { generateGame } from '../../services/grokAPI';
+import { WalletConnect, PaymentModal } from '../../components/payments';
 
 export default function FramePage() {
+  const { isConnected } = useAccount();
   const [gamePrompt, setGamePrompt] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedGame, setGeneratedGame] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [gameType, setGameType] = useState<'none' | 'spaceinvaders' | 'runner'>('none');
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [hasPaid, setHasPaid] = useState(false);
+  const [generationStatus, setGenerationStatus] = useState<string>('');
 
   useEffect(() => {
     // Call sdk.actions.ready() after the app is fully loaded
@@ -37,20 +41,48 @@ export default function FramePage() {
 
   const handleGenerateGame = async () => {
     if (!gamePrompt.trim()) return;
+
+    // Check if user has paid
+    if (!hasPaid) {
+      setShowPaymentModal(true);
+      return;
+    }
     
     setIsGenerating(true);
     setError(null);
+    setGenerationStatus('🔍 Analyzing your prompt...');
     
     try {
-      const result = await generateGame({ userPrompt: gamePrompt });
+      setTimeout(() => setGenerationStatus('🤖 Asking Grok AI to generate your game...'), 500);
+      setTimeout(() => setGenerationStatus('⚙️ Grok is thinking and coding...'), 2000);
+      setTimeout(() => setGenerationStatus('🎨 Designing game mechanics...'), 5000);
+      setTimeout(() => setGenerationStatus('🎮 Building game components...'), 8000);
+      setTimeout(() => setGenerationStatus('✨ Finalizing your game...'), 12000);
+
+      // Call API route instead of direct Grok API
+      const response = await fetch('/api/generate-game', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userPrompt: gamePrompt,
+          temperature: 0.7,
+        }),
+      });
+      
+      const result = await response.json();
       
       if (result.success && result.gameCode) {
-        setGeneratedGame(result.gameCode);
+        setGenerationStatus('✅ Game generated! Loading...');
+        setTimeout(() => setGeneratedGame(result.gameCode), 500);
       } else {
         setError(result.error || 'Failed to generate game');
+        setGenerationStatus('');
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
+      setGenerationStatus('');
     } finally {
       setIsGenerating(false);
     }
@@ -60,6 +92,12 @@ export default function FramePage() {
     setGeneratedGame(null);
     setGameType('none');
     setError(null);
+    setHasPaid(false); // Reset payment requirement
+  };
+
+  const handlePaymentSuccess = () => {
+    setHasPaid(true);
+    setShowPaymentModal(false);
   };
 
   const playExistingGame = (game: 'runner' | 'spaceinvaders') => {
@@ -138,11 +176,17 @@ export default function FramePage() {
               ) : (
                 <div className="flex items-center justify-center space-x-2">
                   <span>🚀</span>
-                  <span>Generate Game</span>
+                  <span>{hasPaid ? 'Generate Game' : 'Pay $0.20 USDC to Unlock Generation'}</span>
                 </div>
               )}
             </button>
             
+            {generationStatus && (
+              <div className="mt-4 p-4 bg-blue-900/50 border border-blue-500 rounded-lg">
+                <p className="text-blue-200 text-sm text-center">{generationStatus}</p>
+              </div>
+            )}
+
             {error && (
               <div className="mt-4 p-4 bg-red-900/50 border border-red-500 rounded-lg">
                 <p className="text-red-200 text-sm">{error}</p>
@@ -189,6 +233,13 @@ export default function FramePage() {
           <p className="text-sm">Powered by AI • Built with Next.js • Deployed on Vercel</p>
         </div>
       </div>
+
+      {/* Payment Modal */}
+      <PaymentModal
+        isOpen={showPaymentModal}
+        onClose={() => setShowPaymentModal(false)}
+        onPaymentSuccess={handlePaymentSuccess}
+      />
     </div>
   );
 }
