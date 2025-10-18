@@ -149,40 +149,54 @@ const DynamicGameLoader: React.FC<DynamicGameLoaderProps> = ({
           return;
         }
 
-        // Try to find the canvas element first (for canvas-based games)
-        let targetElement: HTMLElement | HTMLCanvasElement | null = container.querySelector('canvas');
+        // Try multiple strategies to find the game element
+        let targetElement: HTMLElement | HTMLCanvasElement | null = null;
         
-        // If no canvas, look for the main game div (excluding buttons)
+        // Strategy 1: Look for canvas element (most common for games)
+        targetElement = container.querySelector('canvas');
+        if (targetElement) {
+          console.log('✅ [Screenshot] Found canvas element');
+        }
+        
+        // Strategy 2: Look for the largest non-button div
         if (!targetElement) {
-          // Find divs that aren't buttons or navigation
-          const gameDivs = Array.from(container.querySelectorAll('div')).filter(div => {
-            const hasButton = div.querySelector('button');
-            const isButton = div.tagName === 'BUTTON';
-            return !hasButton && !isButton && div.offsetHeight > 100;
+          console.log('🔍 [Screenshot] No canvas found, looking for game div...');
+          const allDivs = Array.from(container.querySelectorAll('div')) as HTMLElement[];
+          const gameDivs = allDivs.filter(div => {
+            // Exclude divs that are or contain buttons
+            const hasButton = div.querySelector('button') !== null;
+            const isSmall = div.offsetHeight < 200 || div.offsetWidth < 200;
+            return !hasButton && !isSmall;
           });
           
           if (gameDivs.length > 0) {
-            // Use the largest div (likely the game area)
             targetElement = gameDivs.reduce((largest, current) => 
-              current.offsetHeight > largest.offsetHeight ? current : largest
+              (current.offsetHeight * current.offsetWidth) > (largest.offsetHeight * largest.offsetWidth) 
+                ? current : largest
             );
+            console.log('✅ [Screenshot] Found game div');
           }
         }
 
-        // Fallback to container but exclude the back button
+        // Strategy 3: Use the entire container, but we'll filter out buttons
         if (!targetElement) {
+          console.log('⚠️ [Screenshot] No specific game element found, using container');
           targetElement = container;
         }
 
-        console.log('📸 [Screenshot] Capturing element:', targetElement.tagName, {
+        console.log('📸 [Screenshot] Target element:', {
+          tag: targetElement.tagName,
           width: targetElement instanceof HTMLElement ? targetElement.offsetWidth : 0,
-          height: targetElement instanceof HTMLElement ? targetElement.offsetHeight : 0
+          height: targetElement instanceof HTMLElement ? targetElement.offsetHeight : 0,
+          className: targetElement.className || 'none'
         });
 
+        console.log('🎨 [Screenshot] Starting html2canvas rendering...');
+        
         const canvas = await html2canvas(targetElement, {
           backgroundColor: '#000000',
           scale: 2, // Higher resolution
-          logging: false,
+          logging: true, // Enable logging to see what's happening
           useCORS: true,
           allowTaint: true,
           ignoreElements: (element) => {
@@ -194,19 +208,28 @@ const DynamicGameLoader: React.FC<DynamicGameLoaderProps> = ({
           },
         });
 
+        console.log('✅ [Screenshot] html2canvas completed! Canvas size:', canvas.width, 'x', canvas.height);
+
         canvas.toBlob((blob) => {
           if (blob) {
             console.log('✅ [Screenshot] Screenshot captured successfully!');
-            console.log('📊 [Screenshot] Size:', (blob.size / 1024).toFixed(2), 'KB');
+            console.log('📊 [Screenshot] Blob size:', (blob.size / 1024).toFixed(2), 'KB');
+            console.log('📞 [Screenshot] Calling onScreenshotCaptured callback...');
             onScreenshotCaptured?.(blob);
             setScreenshotTaken(true);
           } else {
             console.error('❌ [Screenshot] Failed to convert canvas to blob');
+            alert('⚠️ Screenshot capture failed: Could not convert to blob');
           }
         }, 'image/png');
 
       } catch (err) {
         console.error('❌ [Screenshot] Failed to capture:', err);
+        console.error('❌ [Screenshot] Error details:', {
+          message: err instanceof Error ? err.message : 'Unknown error',
+          stack: err instanceof Error ? err.stack : 'No stack trace'
+        });
+        alert(`⚠️ Screenshot capture failed: ${err instanceof Error ? err.message : 'Unknown error'}`);
       }
     };
 
