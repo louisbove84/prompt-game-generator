@@ -179,9 +179,10 @@ const DynamicGameLoader: React.FC<DynamicGameLoaderProps> = ({
           allowTaint: true,
           ignoreElements: (element) => {
             // Ignore back button and other UI elements
-            return element.tagName === 'BUTTON' || 
-                   element.className?.includes('back') ||
-                   element.textContent?.includes('Back to');
+            if (element.tagName === 'BUTTON') return true;
+            if (element.className && typeof element.className === 'string' && element.className.includes('back')) return true;
+            if (element.textContent && element.textContent.includes('Back to')) return true;
+            return false;
           },
         });
 
