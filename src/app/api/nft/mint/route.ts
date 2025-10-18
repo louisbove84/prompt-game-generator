@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ethers } from 'ethers';
 
+// Configure fetch for serverless environment
+if (typeof global.fetch === 'undefined') {
+  // @ts-ignore
+  global.fetch = fetch;
+}
+
 // ABI for the mintGameNFT function
 const GAME_NFT_ABI = [
   {
@@ -58,8 +64,16 @@ export async function POST(request: NextRequest) {
     console.log('🔗 [NFT Mint] RPC URL:', rpcUrl);
 
     // Connect to Base network - use StaticJsonRpcProvider to avoid network detection
+    // Add custom connection info for Vercel serverless
+    const connectionInfo = {
+      url: rpcUrl,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    };
+    
     const provider = new ethers.providers.StaticJsonRpcProvider(
-      rpcUrl,
+      connectionInfo,
       {
         name: 'base',
         chainId: 8453,
