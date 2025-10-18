@@ -1,59 +1,36 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ethers } from 'ethers';
 
-// Custom fetch wrapper to avoid referrer issues in Vercel
-const customFetch = async (url: string, options?: any) => {
-  const fetchOptions = {
-    ...options,
-    headers: {
-      ...options?.headers,
-      'Content-Type': 'application/json',
-    },
-  };
-  
-  // Remove referrer-related options that cause issues in Edge runtime
-  if (fetchOptions.referrer) {
-    delete fetchOptions.referrer;
-  }
-  if (fetchOptions.referrerPolicy) {
-    delete fetchOptions.referrerPolicy;
-  }
-  
-  return fetch(url, fetchOptions);
-};
+// Custom JSON-RPC provider that works in Vercel Edge runtime
+class VercelJsonRpcProvider extends ethers.providers.StaticJsonRpcProvider {
+  async send(method: string, params: Array<any>): Promise<any> {
+    const request = {
+      method: method,
+      params: params,
+      id: this._nextId++,
+      jsonrpc: '2.0'
+    };
 
-// Override fetch for ethers.js
-// @ts-ignore
-ethers.utils.fetchJson = async (connection: any, json: any, processFunc: any) => {
-  const url = typeof connection === 'string' ? connection : connection.url;
-  
-  try {
-    const response = await customFetch(url, {
+    const response = await fetch(this.connection.url, {
       method: 'POST',
-      body: JSON.stringify(json),
       headers: {
         'Content-Type': 'application/json',
       },
+      body: JSON.stringify(request),
     });
-    
-    const text = await response.text();
-    
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${text}`);
+
+    const result = await response.json();
+
+    if (result.error) {
+      const error: any = new Error(result.error.message);
+      error.code = result.error.code;
+      error.data = result.error.data;
+      throw error;
     }
-    
-    const result = JSON.parse(text);
-    
-    if (processFunc) {
-      return processFunc(result);
-    }
-    
-    return result;
-  } catch (error) {
-    console.error('Custom fetch error:', error);
-    throw error;
+
+    return result.result;
   }
-};
+}
 
 // ABI for the mintGameNFT function
 const GAME_NFT_ABI = [
@@ -111,8 +88,8 @@ export async function POST(request: NextRequest) {
     console.log('🔗 [NFT Mint] Metadata URI:', metadataUri);
     console.log('🔗 [NFT Mint] RPC URL:', rpcUrl);
 
-    // Connect to Base network - use StaticJsonRpcProvider with custom fetch
-    const provider = new ethers.providers.StaticJsonRpcProvider(
+    // Connect to Base network using custom Vercel-compatible provider
+    const provider = new VercelJsonRpcProvider(
       rpcUrl,
       {
         name: 'base',
