@@ -55,10 +55,28 @@ export async function POST(request: NextRequest) {
     console.log('🎨 [NFT Mint] Starting NFT mint process...');
     console.log('📝 [NFT Mint] Recipient:', recipientAddress);
     console.log('🔗 [NFT Mint] Metadata URI:', metadataUri);
+    console.log('🔗 [NFT Mint] RPC URL:', rpcUrl);
 
-    // Connect to Base network
-    const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
+    // Connect to Base network with explicit network configuration
+    const provider = new ethers.providers.JsonRpcProvider(
+      rpcUrl,
+      {
+        name: 'base',
+        chainId: 8453,
+      }
+    );
+
+    // Verify network connection
+    try {
+      const network = await provider.getNetwork();
+      console.log('🌐 [NFT Mint] Connected to network:', network.name, 'chainId:', network.chainId);
+    } catch (networkError) {
+      console.error('❌ [NFT Mint] Network connection failed:', networkError);
+      throw new Error('Failed to connect to Base network. Please check RPC URL configuration.');
+    }
+
     const wallet = new ethers.Wallet(privateKey, provider);
+    console.log('👛 [NFT Mint] Wallet address:', wallet.address);
     
     // Create contract instance
     const contract = new ethers.Contract(contractAddress, GAME_NFT_ABI, wallet);
