@@ -1,12 +1,14 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import * as Babel from '@babel/standalone';
 
 interface DynamicGameLoaderProps {
   gameCode: string;
   onError?: (error: string) => void;
   onBack?: () => void;
+  onScreenshotCaptured?: (screenshot: Blob) => void;
+  captureScreenshot?: boolean; // Whether to capture screenshot after game loads
 }
 
 /**
@@ -20,11 +22,15 @@ interface DynamicGameLoaderProps {
 const DynamicGameLoader: React.FC<DynamicGameLoaderProps> = ({ 
   gameCode, 
   onError,
-  onBack 
+  onBack,
+  onScreenshotCaptured,
+  captureScreenshot = false
 }) => {
   const [GameComponent, setGameComponent] = useState<React.ComponentType | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const gameContainerRef = useRef<HTMLDivElement>(null);
+  const [screenshotTaken, setScreenshotTaken] = useState(false);
 
   useEffect(() => {
     const loadGame = async () => {
@@ -114,6 +120,54 @@ const DynamicGameLoader: React.FC<DynamicGameLoaderProps> = ({
     loadGame();
   }, [gameCode, onError]);
 
+  // Capture screenshot after game is loaded and rendered
+  useEffect(() => {
+    if (!GameComponent || !captureScreenshot || screenshotTaken || !gameContainerRef.current) {
+      return;
+    }
+
+    const captureGameScreenshot = async () => {
+      try {
+        // Wait a bit for the game to render fully
+        await new Promise(resolve => setTimeout(resolve, 2000));
+
+        console.log('📸 [Screenshot] Capturing game screenshot...');
+        
+        const html2canvas = (await import('html2canvas')).default;
+        const element = gameContainerRef.current;
+        
+        if (!element) {
+          console.error('❌ [Screenshot] Game container not found');
+          return;
+        }
+
+        const canvas = await html2canvas(element, {
+          backgroundColor: '#000000',
+          scale: 2, // Higher resolution
+          logging: false,
+          useCORS: true,
+          allowTaint: true,
+        });
+
+        canvas.toBlob((blob) => {
+          if (blob) {
+            console.log('✅ [Screenshot] Screenshot captured successfully!');
+            console.log('📊 [Screenshot] Size:', (blob.size / 1024).toFixed(2), 'KB');
+            onScreenshotCaptured?.(blob);
+            setScreenshotTaken(true);
+          } else {
+            console.error('❌ [Screenshot] Failed to convert canvas to blob');
+          }
+        }, 'image/png');
+
+      } catch (err) {
+        console.error('❌ [Screenshot] Failed to capture:', err);
+      }
+    };
+
+    captureGameScreenshot();
+  }, [GameComponent, captureScreenshot, screenshotTaken, onScreenshotCaptured]);
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
@@ -153,7 +207,7 @@ const DynamicGameLoader: React.FC<DynamicGameLoaderProps> = ({
   }
 
   return (
-    <div className="relative">
+    <div className="relative" ref={gameContainerRef}>
       {onBack && (
         <button
           onClick={onBack}

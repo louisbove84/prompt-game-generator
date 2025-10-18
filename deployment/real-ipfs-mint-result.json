@@ -1,0 +1,41 @@
+{
+  "success": true,
+  "blockNumber": 37007708,
+  "gasUsed": "131414",
+  "gasPrice": "0.002640014",
+  "recipient": "0xD2E7839C926A9A34987E3A862681Ca52fe63c4e6",
+  "gamePrompt": "A space adventure game with retro pixel graphics and electronic music",
+  "imageFile": "gameForge.jpg",
+  "metadataUri": "ipfs://QmTestMetadata1760804779005",
+  "metadata": {
+    "name": "AI Game Genesis #1760804779005",
+    "description": "An AI-generated arcade game: \"A space adventure game with retro pixel graphics and electronic music\". This NFT represents the first screenshot captured from a custom game created by AI on Base network.",
+    "image": "ipfs://QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG",
+    "external_url": "https://your-app.com",
+    "attributes": [
+      {
+        "trait_type": "Generation Type",
+        "value": "AI Generated"
+      },
+      {
+        "trait_type": "Game Prompt",
+        "value": "A space adventure game with retro pixel graphics and electronic music"
+      },
+      {
+        "trait_type": "Network",
+        "value": "Base"
+      },
+      {
+        "trait_type": "Environment",
+        "value": "Production"
+      },
+      {
+        "trait_type": "Timestamp",
+        "value": "2025-10-18T16:26:19.005Z"
+      }
+    ]
+  },
+  "baseScanUrl": "https://basescan.org/tx/undefined",
+  "contractAddress": "0xa6FCA1dEc2646e770cf4d87F7b7Cc6B5F3eA7375",
+  "timestamp": "2025-10-18T16:26:21.106Z"
+}

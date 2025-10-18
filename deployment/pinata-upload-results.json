@@ -1,0 +1,36 @@
+{
+  "imageIpfsHash": "QmS8JEHjvcMNwzAtruuojGEUXgwiVbmA5hfg51Z6GthUg2",
+  "imageUrl": "https://gateway.pinata.cloud/ipfs/QmS8JEHjvcMNwzAtruuojGEUXgwiVbmA5hfg51Z6GthUg2",
+  "metadataIpfsHash": "QmTkLQ7yAiKYniwHcau23ykzTZmmopDm9x9zMhESf9eYT4",
+  "metadataUrl": "https://gateway.pinata.cloud/ipfs/QmTkLQ7yAiKYniwHcau23ykzTZmmopDm9x9zMhESf9eYT4",
+  "metadataUri": "ipfs://QmTkLQ7yAiKYniwHcau23ykzTZmmopDm9x9zMhESf9eYT4",
+  "metadata": {
+    "name": "AI Game Genesis #1760805281260",
+    "description": "An AI-generated arcade game: \"A space adventure game with retro pixel graphics and electronic music\". This NFT represents the first screenshot captured from a custom game created by AI on Base network.",
+    "image": "ipfs://QmS8JEHjvcMNwzAtruuojGEUXgwiVbmA5hfg51Z6GthUg2",
+    "external_url": "https://your-app.com",
+    "attributes": [
+      {
+        "trait_type": "Generation Type",
+        "value": "AI Generated"
+      },
+      {
+        "trait_type": "Game Prompt",
+        "value": "A space adventure game with retro pixel graphics and electronic music"
+      },
+      {
+        "trait_type": "Network",
+        "value": "Base"
+      },
+      {
+        "trait_type": "Environment",
+        "value": "Production"
+      },
+      {
+        "trait_type": "Timestamp",
+        "value": "2025-10-18T16:34:41.260Z"
+      }
+    ]
+  },
+  "timestamp": "2025-10-18T16:34:41.658Z"
+}

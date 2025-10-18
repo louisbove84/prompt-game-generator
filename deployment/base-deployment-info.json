@@ -1,0 +1,9 @@
+{
+  "contractAddress": "0xa6FCA1dEc2646e770cf4d87F7b7Cc6B5F3eA7375",
+  "deploymentTx": "0xa36655d2418597fdd2c95cc3e3a500187e424275ec10a55324a88b44c83827ed",
+  "network": "base",
+  "chainId": 8453,
+  "owner": "0xD2E7839C926A9A34987E3A862681Ca52fe63c4e6",
+  "timestamp": "2025-10-18T16:22:00.979Z",
+  "environment": "production"
+}

@@ -10,8 +10,12 @@ Intelligent game generation platform that creates custom games from user prompts
 
 ## 🚀 Features
 
+- **AI Game Generation** - Create custom games from text prompts using Grok AI
+- **NFT Minting** - Automatically mint the first game screenshot as an NFT on Base network
 - **Space Invaders** - Classic arcade shooter with modern controls and smooth animations
 - **This Is Fine Runner** - Endless runner game with meme-inspired graphics and progressive difficulty
+- **Crypto Payments** - Pay $0.20 USDC on Base network to generate custom games
+- **IPFS Storage** - Game screenshots stored permanently on IPFS via Pinata
 - **Responsive Design** - Optimized for both desktop and mobile gameplay
 - **Smooth Animations** - Powered by Framer Motion for fluid game interactions
 - **Modern UI** - Clean, intuitive interface built with Tailwind CSS
@@ -23,16 +27,31 @@ Intelligent game generation platform that creates custom games from user prompts
 - **TypeScript** - Type-safe JavaScript for better development experience
 - **Framer Motion** - Animation library for smooth game mechanics
 - **Tailwind CSS** - Utility-first CSS framework for responsive design
+- **Grok AI** - AI model for generating game code from text prompts
+- **wagmi + viem** - Modern Web3 libraries for blockchain interactions
+- **Base Network** - Layer 2 blockchain for fast, cheap NFT minting
+- **Pinata** - IPFS pinning service for decentralized storage
+- **OpenZeppelin** - Secure ERC721 smart contract implementation
 
-## 🎯 Game Mechanics
+## 🎯 How It Works
 
-### Space Invaders
+### AI Game Generation Flow
+1. **Connect Wallet** - Connect your Web3 wallet (MetaMask, etc.)
+2. **Describe Game** - Write a text prompt describing your dream game
+3. **Pay USDC** - Pay $0.20 USDC on Base network
+4. **AI Generates** - Grok AI creates a complete playable game
+5. **Auto-Mint NFT** - First screenshot automatically mints as NFT
+6. **Play & Own** - Play your game and keep the NFT forever!
+
+### Pre-Built Games
+
+#### Space Invaders
 - Player movement with keyboard controls
 - Projectile physics and collision detection
 - Progressive difficulty and scoring system
 - Responsive controls for mobile devices
 
-### This Is Fine Runner
+#### This Is Fine Runner
 - Endless scrolling gameplay
 - Obstacle generation and collision detection
 - Progressive speed increase
@@ -43,6 +62,8 @@ Intelligent game generation platform that creates custom games from user prompts
 ### Prerequisites
 - Node.js 18+ 
 - npm or yarn
+- MetaMask or compatible Web3 wallet
+- (Optional) Base network ETH for NFT feature
 
 ### Installation
 
@@ -57,12 +78,23 @@ Intelligent game generation platform that creates custom games from user prompts
    npm install
    ```
 
-3. Run the development server
+3. Set up environment variables
+   ```bash
+   cp env.example .env
+   # Edit .env with your API keys
+   ```
+
+4. (Optional) Set up NFT feature
+   - See [NFT_QUICK_START.md](NFT_QUICK_START.md) for 5-minute setup
+   - See [HARDHAT_DEPLOYMENT.md](HARDHAT_DEPLOYMENT.md) for Hardhat deployment
+   - See [NFT_SETUP_README.md](NFT_SETUP_README.md) for detailed guide
+
+5. Run the development server
    ```bash
    npm run dev
    ```
 
-4. Open [http://localhost:3000](http://localhost:3000) in your browser
+6. Open [http://localhost:3000](http://localhost:3000) in your browser
 
 ## 📁 Project Structure
 

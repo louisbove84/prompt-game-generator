@@ -5,9 +5,10 @@ import { sdk } from '@farcaster/miniapp-sdk';
 import { useAccount } from 'wagmi';
 import { WalletConnect, PaymentModal } from '../components/payments';
 import { DemoGames, DynamicGameLoader } from '../components/games';
+import { mintGameNFT } from '../services/nft';
 
 export default function Home() {
-  const { isConnected } = useAccount();
+  const { isConnected, address } = useAccount();
   const [gamePrompt, setGamePrompt] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedGame, setGeneratedGame] = useState<string | null>(null);
@@ -15,6 +16,10 @@ export default function Home() {
   const [generationStatus, setGenerationStatus] = useState<string>('');
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [hasPaid, setHasPaid] = useState(false);
+  const [isMintingNFT, setIsMintingNFT] = useState(false);
+  const [nftMinted, setNftMinted] = useState(false);
+  const [nftResult, setNftResult] = useState<any>(null);
+  const [currentGamePrompt, setCurrentGamePrompt] = useState<string>('');
 
   // Debug log for payment status
   useEffect(() => {
@@ -44,12 +49,16 @@ export default function Home() {
       setShowPaymentModal(true);
       return;
     }
+
+    // Save the prompt for NFT minting later
+    setCurrentGamePrompt(gamePrompt);
     
     console.log('🚀 [Main] Starting game generation...');
     console.log('📝 [Main] Prompt:', gamePrompt);
     
     setIsGenerating(true);
     setError(null);
+    setNftMinted(false);
     setGenerationStatus('🔍 Analyzing your prompt...');
     
     try {
@@ -105,6 +114,44 @@ export default function Home() {
     setGeneratedGame(null);
     setError(null);
     setHasPaid(false); // Reset payment requirement
+    setNftMinted(false);
+    setNftResult(null);
+    setCurrentGamePrompt('');
+  };
+
+  const handleScreenshotCaptured = async (screenshot: Blob) => {
+    if (!address) {
+      console.error('❌ [NFT] No wallet address found');
+      return;
+    }
+
+    if (nftMinted || isMintingNFT) {
+      console.log('ℹ️ [NFT] NFT already minted or minting in progress');
+      return;
+    }
+
+    console.log('📸 [Main] Screenshot captured, starting NFT mint...');
+    setIsMintingNFT(true);
+
+    try {
+      const result = await mintGameNFT(screenshot, address, currentGamePrompt);
+      
+      if (result.success) {
+        console.log('✅ [Main] NFT minted successfully!');
+        setNftMinted(true);
+        setNftResult(result);
+        
+        // Show success notification
+        alert(`🎉 NFT Minted Successfully!\n\nYour game screenshot has been minted as an NFT and sent to your wallet!\n\nToken ID: ${result.tokenId}\n\nView on OpenSea: ${result.openseaUrl}`);
+      } else {
+        console.error('❌ [Main] NFT minting failed:', result.error);
+        // Don't show error to user, just log it - they already got their game
+      }
+    } catch (error) {
+      console.error('❌ [Main] Exception during NFT mint:', error);
+    } finally {
+      setIsMintingNFT(false);
+    }
   };
 
   const handlePaymentSuccess = () => {
@@ -122,10 +169,38 @@ export default function Home() {
   // If game is generated, show it
   if (generatedGame) {
     return (
-      <DynamicGameLoader 
-        gameCode={generatedGame}
-        onBack={handleBackToGenerator}
-      />
+      <div className="relative">
+        {isMintingNFT && (
+          <div className="fixed top-4 right-4 z-50 bg-purple-600 text-white px-6 py-3 rounded-lg shadow-lg flex items-center space-x-3">
+            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+            <span>Minting your NFT...</span>
+          </div>
+        )}
+        {nftMinted && nftResult && (
+          <div className="fixed top-4 right-4 z-50 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg">
+            <div className="flex items-center space-x-2">
+              <span>🎉</span>
+              <div>
+                <div className="font-bold">NFT Minted!</div>
+                <a 
+                  href={nftResult.openseaUrl} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-sm underline hover:text-green-200"
+                >
+                  View on OpenSea →
+                </a>
+              </div>
+            </div>
+          </div>
+        )}
+        <DynamicGameLoader 
+          gameCode={generatedGame}
+          onBack={handleBackToGenerator}
+          captureScreenshot={hasPaid && !nftMinted}
+          onScreenshotCaptured={handleScreenshotCaptured}
+        />
+      </div>
     );
   }
 

@@ -1,0 +1,41 @@
+{
+  "success": true,
+  "blockNumber": 37007920,
+  "gasUsed": "799552",
+  "gasPrice": "0.00303843",
+  "recipient": "0xD2E7839C926A9A34987E3A862681Ca52fe63c4e6",
+  "gamePrompt": "A space adventure game with retro pixel graphics and electronic music",
+  "imageUrl": "https://ipfs.io/ipfs/QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG/readme",
+  "metadataUri": "data:application/json;base64,eyJuYW1lIjoiQUkgR2FtZSBHZW5lc2lzICMxNzYwODA1MjAzMjYzIiwiZGVzY3JpcHRpb24iOiJBbiBBSS1nZW5lcmF0ZWQgYXJjYWRlIGdhbWU6IFwiQSBzcGFjZSBhZHZlbnR1cmUgZ2FtZSB3aXRoIHJldHJvIHBpeGVsIGdyYXBoaWNzIGFuZCBlbGVjdHJvbmljIG11c2ljXCIuIFRoaXMgTkZUIHJlcHJlc2VudHMgdGhlIGZpcnN0IHNjcmVlbnNob3QgY2FwdHVyZWQgZnJvbSBhIGN1c3RvbSBnYW1lIGNyZWF0ZWQgYnkgQUkgb24gQmFzZSBuZXR3b3JrLiIsImltYWdlIjoiaHR0cHM6Ly9pcGZzLmlvL2lwZnMvUW1Zd0FQSnp2NUNac25BNjI1czNYZjJuZW10WWdQcEhkV0V6NzlvalduUGJkRy9yZWFkbWUiLCJleHRlcm5hbF91cmwiOiJodHRwczovL3lvdXItYXBwLmNvbSIsImF0dHJpYnV0ZXMiOlt7InRyYWl0X3R5cGUiOiJHZW5lcmF0aW9uIFR5cGUiLCJ2YWx1ZSI6IkFJIEdlbmVyYXRlZCJ9LHsidHJhaXRfdHlwZSI6IkdhbWUgUHJvbXB0IiwidmFsdWUiOiJBIHNwYWNlIGFkdmVudHVyZSBnYW1lIHdpdGggcmV0cm8gcGl4ZWwgZ3JhcGhpY3MgYW5kIGVsZWN0cm9uaWMgbXVzaWMifSx7InRyYWl0X3R5cGUiOiJOZXR3b3JrIiwidmFsdWUiOiJCYXNlIn0seyJ0cmFpdF90eXBlIjoiRW52aXJvbm1lbnQiLCJ2YWx1ZSI6IlByb2R1Y3Rpb24ifSx7InRyYWl0X3R5cGUiOiJUaW1lc3RhbXAiLCJ2YWx1ZSI6IjIwMjUtMTAtMThUMTY6MzM6MjMuMjYzWiJ9XX0=",
+  "metadata": {
+    "name": "AI Game Genesis #1760805203263",
+    "description": "An AI-generated arcade game: \"A space adventure game with retro pixel graphics and electronic music\". This NFT represents the first screenshot captured from a custom game created by AI on Base network.",
+    "image": "https://ipfs.io/ipfs/QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG/readme",
+    "external_url": "https://your-app.com",
+    "attributes": [
+      {
+        "trait_type": "Generation Type",
+        "value": "AI Generated"
+      },
+      {
+        "trait_type": "Game Prompt",
+        "value": "A space adventure game with retro pixel graphics and electronic music"
+      },
+      {
+        "trait_type": "Network",
+        "value": "Base"
+      },
+      {
+        "trait_type": "Environment",
+        "value": "Production"
+      },
+      {
+        "trait_type": "Timestamp",
+        "value": "2025-10-18T16:33:23.263Z"
+      }
+    ]
+  },
+  "baseScanUrl": "https://basescan.org/tx/undefined",
+  "contractAddress": "0xa6FCA1dEc2646e770cf4d87F7b7Cc6B5F3eA7375",
+  "timestamp": "2025-10-18T16:33:25.332Z"
+}
