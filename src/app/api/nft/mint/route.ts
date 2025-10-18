@@ -129,15 +129,55 @@ export async function POST(request: NextRequest) {
     
     console.log('✅ [NFT Mint] Transaction confirmed!');
     console.log('📦 [NFT Mint] Block:', receipt.blockNumber);
+    console.log('📝 [NFT Mint] Receipt events:', JSON.stringify(receipt.events, null, 2));
 
-    // Parse the event to get token ID
+    // Parse the event to get token ID - try multiple methods
+    let tokenId: string | undefined;
+    
+    // Method 1: Look for GameNFTMinted event
     const event = receipt.events?.find((e: any) => e.event === 'GameNFTMinted');
-    const tokenId = event?.args?.tokenId?.toString();
+    if (event?.args?.tokenId) {
+      tokenId = event.args.tokenId.toString();
+      console.log('✅ [NFT Mint] Token ID from GameNFTMinted event:', tokenId);
+    }
+    
+    // Method 2: Look for Transfer event (ERC721 standard)
+    if (!tokenId) {
+      const transferEvent = receipt.events?.find((e: any) => e.event === 'Transfer');
+      if (transferEvent?.args?.tokenId) {
+        tokenId = transferEvent.args.tokenId.toString();
+        console.log('✅ [NFT Mint] Token ID from Transfer event:', tokenId);
+      }
+    }
+    
+    // Method 3: Parse logs manually
+    if (!tokenId && receipt.logs && receipt.logs.length > 0) {
+      console.log('🔍 [NFT Mint] Parsing logs manually...');
+      for (const log of receipt.logs) {
+        try {
+          const parsed = contract.interface.parseLog(log);
+          console.log('📋 [NFT Mint] Parsed log:', parsed.name, parsed.args);
+          if (parsed.name === 'Transfer' || parsed.name === 'GameNFTMinted') {
+            if (parsed.args.tokenId) {
+              tokenId = parsed.args.tokenId.toString();
+              console.log('✅ [NFT Mint] Token ID from parsed log:', tokenId);
+              break;
+            }
+          }
+        } catch (e) {
+          // Skip logs that don't match our contract
+        }
+      }
+    }
+    
+    if (!tokenId) {
+      console.warn('⚠️ [NFT Mint] Could not extract token ID from receipt');
+    }
 
     // OpenSea URLs for Base network
     // Note: It may take a few minutes for OpenSea to index new NFTs
-    const openseaUrl = `https://opensea.io/assets/base/${contractAddress}/${tokenId}`;
-    const nftViewUrl = `https://basescan.org/nft/${contractAddress}/${tokenId}`;
+    const openseaUrl = tokenId ? `https://opensea.io/assets/base/${contractAddress}/${tokenId}` : undefined;
+    const nftViewUrl = tokenId ? `https://basescan.org/nft/${contractAddress}/${tokenId}` : `https://basescan.org/tx/${receipt.transactionHash}`;
 
     return NextResponse.json({
       success: true,

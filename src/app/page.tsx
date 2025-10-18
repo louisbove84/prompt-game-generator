@@ -149,7 +149,8 @@ export default function Home() {
         setNftResult(result);
         
         // Show success notification
-        const message = `🎉 NFT Minted Successfully!\n\nYour game screenshot has been minted as an NFT and sent to your wallet!\n\nToken ID: ${result.tokenId}\n\nView on BaseScan: ${result.nftViewUrl}\n\nNote: It may take a few minutes for OpenSea to index your NFT.`;
+        const tokenInfo = result.tokenId ? `\nToken ID: ${result.tokenId}` : '';
+        const message = `🎉 NFT Minted Successfully!\n\nYour game screenshot has been minted as an NFT and sent to your wallet!${tokenInfo}\n\nTransaction: ${result.transactionHash}\n\nView on BaseScan: ${result.nftViewUrl}\n\nNote: It may take a few minutes for OpenSea to index your NFT.`;
         alert(message);
       } else {
         console.error('❌ [Main] NFT minting failed:', result.error);
@@ -201,7 +202,7 @@ export default function Home() {
                 <div className="text-sm space-y-1">
                   <div>
                     <a 
-                      href={nftResult.nftViewUrl} 
+                      href={nftResult.nftViewUrl || nftResult.explorerUrl} 
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="underline hover:text-green-200 font-medium"
@@ -209,19 +210,26 @@ export default function Home() {
                       View on BaseScan →
                     </a>
                   </div>
-                  <div>
-                    <a 
-                      href={nftResult.openseaUrl} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="underline hover:text-green-200"
-                    >
-                      View on OpenSea →
-                    </a>
-                    <span className="text-xs block text-green-100">
-                      (may take a few minutes to index)
-                    </span>
-                  </div>
+                  {nftResult.openseaUrl && nftResult.tokenId && (
+                    <div>
+                      <a 
+                        href={nftResult.openseaUrl} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="underline hover:text-green-200"
+                      >
+                        View on OpenSea →
+                      </a>
+                      <span className="text-xs block text-green-100">
+                        (may take a few minutes to index)
+                      </span>
+                    </div>
+                  )}
+                  {nftResult.tokenId && (
+                    <div className="text-xs text-green-100">
+                      Token ID: {nftResult.tokenId}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
