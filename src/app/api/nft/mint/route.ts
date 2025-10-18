@@ -1,11 +1,59 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ethers } from 'ethers';
 
-// Configure fetch for serverless environment
-if (typeof global.fetch === 'undefined') {
-  // @ts-ignore
-  global.fetch = fetch;
-}
+// Custom fetch wrapper to avoid referrer issues in Vercel
+const customFetch = async (url: string, options?: any) => {
+  const fetchOptions = {
+    ...options,
+    headers: {
+      ...options?.headers,
+      'Content-Type': 'application/json',
+    },
+  };
+  
+  // Remove referrer-related options that cause issues in Edge runtime
+  if (fetchOptions.referrer) {
+    delete fetchOptions.referrer;
+  }
+  if (fetchOptions.referrerPolicy) {
+    delete fetchOptions.referrerPolicy;
+  }
+  
+  return fetch(url, fetchOptions);
+};
+
+// Override fetch for ethers.js
+// @ts-ignore
+ethers.utils.fetchJson = async (connection: any, json: any, processFunc: any) => {
+  const url = typeof connection === 'string' ? connection : connection.url;
+  
+  try {
+    const response = await customFetch(url, {
+      method: 'POST',
+      body: JSON.stringify(json),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    
+    const text = await response.text();
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${text}`);
+    }
+    
+    const result = JSON.parse(text);
+    
+    if (processFunc) {
+      return processFunc(result);
+    }
+    
+    return result;
+  } catch (error) {
+    console.error('Custom fetch error:', error);
+    throw error;
+  }
+};
 
 // ABI for the mintGameNFT function
 const GAME_NFT_ABI = [
@@ -63,17 +111,9 @@ export async function POST(request: NextRequest) {
     console.log('🔗 [NFT Mint] Metadata URI:', metadataUri);
     console.log('🔗 [NFT Mint] RPC URL:', rpcUrl);
 
-    // Connect to Base network - use StaticJsonRpcProvider to avoid network detection
-    // Add custom connection info for Vercel serverless
-    const connectionInfo = {
-      url: rpcUrl,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    };
-    
+    // Connect to Base network - use StaticJsonRpcProvider with custom fetch
     const provider = new ethers.providers.StaticJsonRpcProvider(
-      connectionInfo,
+      rpcUrl,
       {
         name: 'base',
         chainId: 8453,
