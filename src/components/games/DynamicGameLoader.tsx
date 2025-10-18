@@ -191,6 +191,29 @@ const DynamicGameLoader: React.FC<DynamicGameLoaderProps> = ({
           className: targetElement.className || 'none'
         });
 
+        // If we found a canvas element, try direct capture first
+        if (targetElement instanceof HTMLCanvasElement) {
+          console.log('🎯 [Screenshot] Found canvas - trying direct capture first...');
+          try {
+            await new Promise<void>((resolve, reject) => {
+              targetElement.toBlob((blob) => {
+                if (blob) {
+                  console.log('✅ [Screenshot] Direct canvas capture succeeded!');
+                  console.log('📊 [Screenshot] Blob size:', (blob.size / 1024).toFixed(2), 'KB');
+                  onScreenshotCaptured?.(blob);
+                  setScreenshotTaken(true);
+                  resolve();
+                } else {
+                  reject(new Error('Canvas toBlob returned null'));
+                }
+              }, 'image/png');
+            });
+            return; // Success! Exit early
+          } catch (canvasErr) {
+            console.warn('⚠️ [Screenshot] Direct canvas capture failed, trying html2canvas...', canvasErr);
+          }
+        }
+        
         console.log('🎨 [Screenshot] Starting html2canvas rendering...');
         
         const canvas = await html2canvas(targetElement, {
