@@ -26,25 +26,46 @@ const metadata = {
 let config: any = null;
 
 if (typeof window !== 'undefined') {
-  config = createConfig({
-    chains: [base, baseSepolia],
-    connectors: [
-      walletConnect({
-        projectId,
-        metadata,
-        showQrModal: true, // Show QR on desktop, deep link on mobile
-      }),
-      coinbaseWallet({
-        appName: metadata.name,
-        appLogoUrl: metadata.icons[0],
-      }),
-    ],
-    transports: {
-      [base.id]: http(process.env.NEXT_PUBLIC_BASE_RPC_URL),
-      [baseSepolia.id]: http(process.env.NEXT_PUBLIC_BASE_SEPOLIA_RPC_URL),
-    },
-    ssr: true,
-  });
+  try {
+    config = createConfig({
+      chains: [base, baseSepolia],
+      connectors: [
+        coinbaseWallet({
+          appName: metadata.name,
+          appLogoUrl: metadata.icons[0],
+        }),
+        ...(projectId && projectId !== 'YOUR_PROJECT_ID' ? [
+          walletConnect({
+            projectId,
+            metadata,
+            showQrModal: true, // Show QR on desktop, deep link on mobile
+          })
+        ] : []),
+      ],
+      transports: {
+        [base.id]: http(process.env.NEXT_PUBLIC_BASE_RPC_URL),
+        [baseSepolia.id]: http(process.env.NEXT_PUBLIC_BASE_SEPOLIA_RPC_URL),
+      },
+      ssr: true,
+    });
+  } catch (error) {
+    console.warn('Failed to create wallet config:', error);
+    // Fallback config without WalletConnect
+    config = createConfig({
+      chains: [base, baseSepolia],
+      connectors: [
+        coinbaseWallet({
+          appName: metadata.name,
+          appLogoUrl: metadata.icons[0],
+        }),
+      ],
+      transports: {
+        [base.id]: http(process.env.NEXT_PUBLIC_BASE_RPC_URL),
+        [baseSepolia.id]: http(process.env.NEXT_PUBLIC_BASE_SEPOLIA_RPC_URL),
+      },
+      ssr: true,
+    });
+  }
 }
 
 interface BaseProviderProps {
