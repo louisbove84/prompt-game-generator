@@ -224,12 +224,66 @@ const DynamicGameLoader: React.FC<DynamicGameLoaderProps> = ({
         }, 'image/png');
 
       } catch (err) {
-        console.error('❌ [Screenshot] Failed to capture:', err);
+        console.error('❌ [Screenshot] html2canvas failed:', err);
         console.error('❌ [Screenshot] Error details:', {
           message: err instanceof Error ? err.message : 'Unknown error',
-          stack: err instanceof Error ? err.stack : 'No stack trace'
+          stack: err instanceof Error ? err.stack : 'No stack trace',
+          type: typeof err,
+          stringified: JSON.stringify(err, null, 2)
         });
-        alert(`⚠️ Screenshot capture failed: ${err instanceof Error ? err.message : 'Unknown error'}`);
+        
+        // Try fallback 1: Direct canvas capture (if game uses canvas)
+        const container = gameContainerRef.current;
+        const gameCanvas = container?.querySelector('canvas');
+        
+        if (gameCanvas instanceof HTMLCanvasElement) {
+          console.log('🔄 [Screenshot] Trying direct canvas capture...');
+          try {
+            gameCanvas.toBlob((blob) => {
+              if (blob) {
+                console.log('✅ [Screenshot] Direct canvas capture succeeded!');
+                console.log('📊 [Screenshot] Blob size:', (blob.size / 1024).toFixed(2), 'KB');
+                onScreenshotCaptured?.(blob);
+                setScreenshotTaken(true);
+              } else {
+                throw new Error('Canvas toBlob returned null');
+              }
+            }, 'image/png');
+            return; // Exit if direct capture succeeds
+          } catch (canvasErr) {
+            console.error('❌ [Screenshot] Direct canvas capture failed:', canvasErr);
+          }
+        }
+        
+        // Try fallback 2: html2canvas with simpler options
+        console.log('🔄 [Screenshot] Trying html2canvas with simpler options...');
+        try {
+          const html2canvas = (await import('html2canvas')).default;
+          
+          if (container) {
+            // Much simpler options - just capture everything
+            const canvas = await html2canvas(container, {
+              backgroundColor: '#000000',
+              scale: 1, // Lower resolution to avoid issues
+              logging: true,
+              allowTaint: false, // Stricter mode
+              useCORS: false, // Disable CORS
+            });
+            
+            console.log('✅ [Screenshot] Fallback html2canvas succeeded!');
+            
+            canvas.toBlob((blob) => {
+              if (blob) {
+                console.log('✅ [Screenshot] Fallback blob created:', (blob.size / 1024).toFixed(2), 'KB');
+                onScreenshotCaptured?.(blob);
+                setScreenshotTaken(true);
+              }
+            }, 'image/png');
+          }
+        } catch (fallbackErr) {
+          console.error('❌ [Screenshot] All fallback methods failed:', fallbackErr);
+          alert(`⚠️ Screenshot capture failed completely.\n\nError: ${err instanceof Error ? err.message : 'Unknown error'}\n\nPlease check the browser console for details.`);
+        }
       }
     };
 
