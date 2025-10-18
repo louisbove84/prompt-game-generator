@@ -15,7 +15,8 @@ export interface NFTMintResult {
   tokenId?: string;
   contractAddress?: string;
   explorerUrl?: string;
-  openseaUrl?: string;
+  nftViewUrl?: string; // BaseScan NFT view
+  openseaUrl?: string; // OpenSea (may take time to index)
   error?: string;
 }
 
@@ -41,9 +42,36 @@ export async function mintGameNFT(
 
     // Step 2: Create and upload metadata to IPFS
     console.log('📤 [NFT Service] Step 2: Creating and uploading metadata...');
+    
+    // Create a short, catchy name from the game prompt
+    const generateGameName = (prompt: string): string => {
+      // Extract key words from the prompt (nouns, adjectives)
+      const words = prompt
+        .toLowerCase()
+        .replace(/[^\w\s]/g, ' ')
+        .split(/\s+/)
+        .filter(word => word.length > 3 && !['game', 'with', 'that', 'where', 'when', 'what', 'this', 'from'].includes(word));
+      
+      // Take first 2-3 meaningful words and capitalize them
+      const nameWords = words.slice(0, 3).map(word => 
+        word.charAt(0).toUpperCase() + word.slice(1)
+      );
+      
+      // If we got good words, use them, otherwise use a generic name
+      if (nameWords.length >= 2) {
+        return `${nameWords.join(' ')} - AI Game`;
+      } else if (nameWords.length === 1) {
+        return `${nameWords[0]} Adventure - AI Game`;
+      } else {
+        return `AI Generated Game #${timestamp}`;
+      }
+    };
+
+    const gameName = generateGameName(gamePrompt);
+    
     const metadata: NFTMetadata = {
-      name: `AI Game Genesis #${timestamp}`,
-      description: `An AI-generated arcade game: "${gamePrompt}". This NFT represents the first screenshot captured from a custom game created by AI.`,
+      name: gameName,
+      description: `An AI-generated arcade game: "${gamePrompt}". This NFT captures the first moment of a unique game created by artificial intelligence.`,
       image: imageIpfsUri,
       attributes: [
         {
@@ -59,8 +87,8 @@ export async function mintGameNFT(
           value: 'Base',
         },
         {
-          trait_type: 'Timestamp',
-          value: new Date(timestamp).toISOString(),
+          trait_type: 'Created Date',
+          value: new Date(timestamp).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
         },
       ],
     };
@@ -98,6 +126,7 @@ export async function mintGameNFT(
       tokenId: result.tokenId,
       contractAddress: result.contractAddress,
       explorerUrl: result.explorerUrl,
+      nftViewUrl: result.nftViewUrl,
       openseaUrl: result.openseaUrl,
     };
 

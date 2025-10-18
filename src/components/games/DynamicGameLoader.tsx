@@ -134,19 +134,55 @@ const DynamicGameLoader: React.FC<DynamicGameLoaderProps> = ({
         console.log('📸 [Screenshot] Capturing game screenshot...');
         
         const html2canvas = (await import('html2canvas')).default;
-        const element = gameContainerRef.current;
+        const container = gameContainerRef.current;
         
-        if (!element) {
+        if (!container) {
           console.error('❌ [Screenshot] Game container not found');
           return;
         }
 
-        const canvas = await html2canvas(element, {
+        // Try to find the canvas element first (for canvas-based games)
+        let targetElement: HTMLElement | HTMLCanvasElement | null = container.querySelector('canvas');
+        
+        // If no canvas, look for the main game div (excluding buttons)
+        if (!targetElement) {
+          // Find divs that aren't buttons or navigation
+          const gameDivs = Array.from(container.querySelectorAll('div')).filter(div => {
+            const hasButton = div.querySelector('button');
+            const isButton = div.tagName === 'BUTTON';
+            return !hasButton && !isButton && div.offsetHeight > 100;
+          });
+          
+          if (gameDivs.length > 0) {
+            // Use the largest div (likely the game area)
+            targetElement = gameDivs.reduce((largest, current) => 
+              current.offsetHeight > largest.offsetHeight ? current : largest
+            );
+          }
+        }
+
+        // Fallback to container but exclude the back button
+        if (!targetElement) {
+          targetElement = container;
+        }
+
+        console.log('📸 [Screenshot] Capturing element:', targetElement.tagName, {
+          width: targetElement instanceof HTMLElement ? targetElement.offsetWidth : 0,
+          height: targetElement instanceof HTMLElement ? targetElement.offsetHeight : 0
+        });
+
+        const canvas = await html2canvas(targetElement, {
           backgroundColor: '#000000',
           scale: 2, // Higher resolution
           logging: false,
           useCORS: true,
           allowTaint: true,
+          ignoreElements: (element) => {
+            // Ignore back button and other UI elements
+            return element.tagName === 'BUTTON' || 
+                   element.className?.includes('back') ||
+                   element.textContent?.includes('Back to');
+          },
         });
 
         canvas.toBlob((blob) => {

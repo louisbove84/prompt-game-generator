@@ -134,6 +134,11 @@ export async function POST(request: NextRequest) {
     const event = receipt.events?.find((e: any) => e.event === 'GameNFTMinted');
     const tokenId = event?.args?.tokenId?.toString();
 
+    // OpenSea URLs for Base network
+    // Note: It may take a few minutes for OpenSea to index new NFTs
+    const openseaUrl = `https://opensea.io/assets/base/${contractAddress}/${tokenId}`;
+    const nftViewUrl = `https://basescan.org/nft/${contractAddress}/${tokenId}`;
+
     return NextResponse.json({
       success: true,
       transactionHash: receipt.transactionHash,
@@ -142,7 +147,8 @@ export async function POST(request: NextRequest) {
       recipientAddress: recipientAddress,
       blockNumber: receipt.blockNumber,
       explorerUrl: `https://basescan.org/tx/${receipt.transactionHash}`,
-      openseaUrl: `https://opensea.io/assets/base/${contractAddress}/${tokenId}`,
+      nftViewUrl: nftViewUrl, // BaseScan NFT view (works immediately)
+      openseaUrl: openseaUrl, // OpenSea (may take time to index)
     });
 
   } catch (error) {

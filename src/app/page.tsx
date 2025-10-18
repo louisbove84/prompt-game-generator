@@ -142,7 +142,8 @@ export default function Home() {
         setNftResult(result);
         
         // Show success notification
-        alert(`🎉 NFT Minted Successfully!\n\nYour game screenshot has been minted as an NFT and sent to your wallet!\n\nToken ID: ${result.tokenId}\n\nView on OpenSea: ${result.openseaUrl}`);
+        const message = `🎉 NFT Minted Successfully!\n\nYour game screenshot has been minted as an NFT and sent to your wallet!\n\nToken ID: ${result.tokenId}\n\nView on BaseScan: ${result.nftViewUrl}\n\nNote: It may take a few minutes for OpenSea to index your NFT.`;
+        alert(message);
       } else {
         console.error('❌ [Main] NFT minting failed:', result.error);
         // Don't show error to user, just log it - they already got their game
@@ -177,19 +178,36 @@ export default function Home() {
           </div>
         )}
         {nftMinted && nftResult && (
-          <div className="fixed top-4 right-4 z-50 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg">
-            <div className="flex items-center space-x-2">
-              <span>🎉</span>
-              <div>
-                <div className="font-bold">NFT Minted!</div>
-                <a 
-                  href={nftResult.openseaUrl} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-sm underline hover:text-green-200"
-                >
-                  View on OpenSea →
-                </a>
+          <div className="fixed top-4 right-4 z-50 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg max-w-sm">
+            <div className="flex items-start space-x-2">
+              <span className="text-2xl">🎉</span>
+              <div className="flex-1">
+                <div className="font-bold mb-1">NFT Minted!</div>
+                <div className="text-sm space-y-1">
+                  <div>
+                    <a 
+                      href={nftResult.nftViewUrl} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="underline hover:text-green-200 font-medium"
+                    >
+                      View on BaseScan →
+                    </a>
+                  </div>
+                  <div>
+                    <a 
+                      href={nftResult.openseaUrl} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="underline hover:text-green-200"
+                    >
+                      View on OpenSea →
+                    </a>
+                    <span className="text-xs block text-green-100">
+                      (may take a few minutes to index)
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
