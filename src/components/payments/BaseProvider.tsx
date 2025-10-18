@@ -6,6 +6,7 @@ import { createConfig, http } from 'wagmi';
 import { base, baseSepolia } from 'wagmi/chains';
 import { coinbaseWallet, walletConnect } from 'wagmi/connectors';
 import { OnchainKitProvider } from '@coinbase/onchainkit';
+import { useState, useEffect } from 'react';
 
 // Create a query client
 const queryClient = new QueryClient();
@@ -21,37 +22,52 @@ const metadata = {
   icons: ['https://www.beuxbunk.com/images/gameForgeLoading.jpg']
 };
 
-// Configure wagmi with Base as primary chain
-const config = createConfig({
-  chains: [base, baseSepolia],
-  connectors: [
-    walletConnect({
-      projectId,
-      metadata,
-      showQrModal: true, // Show QR on desktop, deep link on mobile
-    }),
-    coinbaseWallet({
-      appName: metadata.name,
-      appLogoUrl: metadata.icons[0],
-    }),
-  ],
-  transports: {
-    [base.id]: http(process.env.NEXT_PUBLIC_BASE_RPC_URL),
-    [baseSepolia.id]: http(process.env.NEXT_PUBLIC_BASE_SEPOLIA_RPC_URL),
-  },
-  ssr: true,
-});
+// Configure wagmi with Base as primary chain (client-side only)
+let config: any = null;
+
+if (typeof window !== 'undefined') {
+  config = createConfig({
+    chains: [base, baseSepolia],
+    connectors: [
+      walletConnect({
+        projectId,
+        metadata,
+        showQrModal: true, // Show QR on desktop, deep link on mobile
+      }),
+      coinbaseWallet({
+        appName: metadata.name,
+        appLogoUrl: metadata.icons[0],
+      }),
+    ],
+    transports: {
+      [base.id]: http(process.env.NEXT_PUBLIC_BASE_RPC_URL),
+      [baseSepolia.id]: http(process.env.NEXT_PUBLIC_BASE_SEPOLIA_RPC_URL),
+    },
+    ssr: true,
+  });
+}
 
 interface BaseProviderProps {
   children: React.ReactNode;
 }
 
 export function BaseProvider({ children }: BaseProviderProps) {
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  // Don't render providers until client-side
+  if (!isClient || !config) {
+    return <div>{children}</div>;
+  }
+
   return (
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
         <OnchainKitProvider
-          apiKey={process.env.NEXT_PUBLIC_BASE_API_KEY}
+          apiKey={process.env.NEXT_PUBLIC_ONCHAINKIT_API_KEY}
           chain={base}
         >
           {children}
