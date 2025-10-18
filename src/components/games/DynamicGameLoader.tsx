@@ -122,16 +122,24 @@ const DynamicGameLoader: React.FC<DynamicGameLoaderProps> = ({
 
   // Capture screenshot after game is loaded and rendered
   useEffect(() => {
+    console.log('🎬 [Screenshot] useEffect triggered');
+    console.log('🎮 [Screenshot] GameComponent:', !!GameComponent);
+    console.log('📷 [Screenshot] captureScreenshot prop:', captureScreenshot);
+    console.log('✅ [Screenshot] screenshotTaken:', screenshotTaken);
+    console.log('📦 [Screenshot] gameContainerRef.current:', !!gameContainerRef.current);
+    
     if (!GameComponent || !captureScreenshot || screenshotTaken || !gameContainerRef.current) {
+      console.log('⏭️ [Screenshot] Skipping screenshot capture');
       return;
     }
 
     const captureGameScreenshot = async () => {
       try {
+        console.log('⏳ [Screenshot] Waiting 2 seconds for game to render...');
         // Wait a bit for the game to render fully
         await new Promise(resolve => setTimeout(resolve, 2000));
 
-        console.log('📸 [Screenshot] Capturing game screenshot...');
+        console.log('📸 [Screenshot] Starting screenshot capture...');
         
         const html2canvas = (await import('html2canvas')).default;
         const container = gameContainerRef.current;

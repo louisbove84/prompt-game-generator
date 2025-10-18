@@ -120,8 +120,15 @@ export default function Home() {
   };
 
   const handleScreenshotCaptured = async (screenshot: Blob) => {
+    console.log('📸 [Main] handleScreenshotCaptured called!');
+    console.log('👛 [Main] Wallet address:', address || 'NOT CONNECTED');
+    console.log('📊 [Main] Screenshot size:', (screenshot.size / 1024).toFixed(2), 'KB');
+    console.log('💰 [Main] Has paid:', hasPaid);
+    console.log('🎨 [Main] NFT already minted:', nftMinted);
+    
     if (!address) {
-      console.error('❌ [NFT] No wallet address found');
+      console.error('❌ [NFT] No wallet address found - wallet not connected!');
+      alert('⚠️ Please connect your wallet to mint an NFT');
       return;
     }
 
