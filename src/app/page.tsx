@@ -179,14 +179,6 @@ export default function Home() {
   if (generatedGame) {
     return (
       <div className="relative">
-        {/* Debug info */}
-        <div className="fixed top-4 left-4 z-50 bg-black/80 text-white px-4 py-2 rounded text-xs font-mono">
-          <div>💰 Paid: {hasPaid ? '✅' : '❌'}</div>
-          <div>👛 Wallet: {address ? '✅ ' + address.slice(0, 6) + '...' + address.slice(-4) : '❌'}</div>
-          <div>🎨 NFT Minted: {nftMinted ? '✅' : '❌'}</div>
-          <div>📸 Should Capture: {(hasPaid && !nftMinted) ? '✅' : '❌'}</div>
-        </div>
-        
         {isMintingNFT && (
           <div className="fixed top-4 right-4 z-50 bg-purple-600 text-white px-6 py-3 rounded-lg shadow-lg flex items-center space-x-3">
             <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
