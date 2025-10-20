@@ -31,14 +31,10 @@ const NFTSelector: React.FC<NFTSelectorProps> = ({ isOpen, onNFTSelected, onClos
     try {
       const result = await loadNFTsFromWallet(address);
       if (result.success && result.nfts) {
-        // Show all NFTs, but prioritize ones with game code
-        const allNFTs = result.nfts;
-        const playableNFTs = allNFTs.filter(nft => nft.gameCode);
-        const collectibleNFTs = allNFTs.filter(nft => !nft.gameCode);
-        
-        // Sort: playable NFTs first, then collectible NFTs
-        setNfts([...playableNFTs, ...collectibleNFTs]);
-        console.log('🎮 [NFT Selector] Found', playableNFTs.length, 'playable NFTs and', collectibleNFTs.length, 'collectible NFTs');
+        // Show only playable NFTs (with game code)
+        const playableNFTs = result.nfts.filter(nft => nft.gameCode);
+        setNfts(playableNFTs);
+        console.log('🎮 [NFT Selector] Found', playableNFTs.length, 'playable NFTs');
       } else {
         setError(result.error || 'Failed to load NFTs');
       }
@@ -148,15 +144,9 @@ const NFTSelector: React.FC<NFTSelectorProps> = ({ isOpen, onNFTSelected, onClos
                   </div>
                   <div className="flex items-start justify-between mb-1">
                     <h3 className="font-bold text-gray-900 flex-1">{nft.name}</h3>
-                    {nft.gameCode ? (
-                      <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full font-semibold ml-2">
-                        🎮 Playable
-                      </span>
-                    ) : (
-                      <span className="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full font-semibold ml-2">
-                        🖼️ Collectible
-                      </span>
-                    )}
+                    <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full font-semibold ml-2">
+                      🎮 Playable
+                    </span>
                   </div>
                   <p className="text-sm text-gray-600 mb-2 line-clamp-2">
                     {nft.description}
@@ -173,14 +163,9 @@ const NFTSelector: React.FC<NFTSelectorProps> = ({ isOpen, onNFTSelected, onClos
                         e.stopPropagation();
                         handleNFTSelect(nft);
                       }}
-                      disabled={!nft.gameCode}
-                      className={`font-bold py-1 px-3 rounded text-sm ${
-                        nft.gameCode
-                          ? 'bg-green-600 hover:bg-green-700 text-white'
-                          : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                      }`}
+                      className="bg-green-600 hover:bg-green-700 text-white font-bold py-1 px-3 rounded text-sm"
                     >
-                      {nft.gameCode ? 'Play Game' : 'View Only'}
+                      Play Game
                     </button>
                   </div>
                 </div>
@@ -191,7 +176,7 @@ const NFTSelector: React.FC<NFTSelectorProps> = ({ isOpen, onNFTSelected, onClos
 
         <div className="mt-4 text-center">
           <p className="text-sm text-gray-500">
-            🎮 Playable NFTs can be loaded as games. 🖼️ Collectible NFTs are image-only.
+            🎮 These are your playable game NFTs. Click "Play Game" to load and play them!
           </p>
         </div>
       </div>

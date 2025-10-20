@@ -88,12 +88,18 @@ export async function loadNFTsFromWallet(walletAddress: string): Promise<NFTLoad
           console.log('🎮 [NFT Loader] Game code found:', !!gameCode, 'Length:', gameCode?.length || 0);
           console.log('📝 [NFT Loader] Game prompt found:', !!gamePrompt, 'Length:', gamePrompt?.length || 0);
           
+          // Format image URL properly
+          let imageUrl = metadata.image || nft.image?.cachedUrl || '';
+          if (imageUrl.startsWith('ipfs://')) {
+            imageUrl = imageUrl.replace('ipfs://', 'https://ipfs.io/ipfs/');
+          }
+
           nfts.push({
             tokenId: nft.tokenId,
             contractAddress: nft.contract.address,
             name: metadata.name || `Game NFT #${nft.tokenId}`,
             description: metadata.description || '',
-            image: metadata.image || nft.image?.cachedUrl || '',
+            image: imageUrl,
             gameCode: gameCode,
             gamePrompt: gamePrompt,
             metadataUri: metadataUri || '',
