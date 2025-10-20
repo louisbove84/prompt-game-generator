@@ -1,13 +1,33 @@
 /**
  * NFT Service
  * Coordinates the full NFT minting flow:
- * 1. Capture game screenshot
- * 2. Upload image to IPFS
+ * 1. Generate custom NFT image using Grok AI (combines GameForge branding + screenshot + prompt)
+ * 2. Upload generated image to IPFS
  * 3. Create and upload metadata to IPFS
  * 4. Mint NFT on Base network
  */
 
 import { uploadImageToIPFS, uploadMetadataToIPFS, NFTMetadata } from './ipfs';
+
+/**
+ * Helper: Convert Blob to Data URL
+ */
+async function blobToDataUrl(blob: Blob): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+}
+
+/**
+ * Helper: Convert Data URL to Blob
+ */
+async function dataUrlToBlob(dataUrl: string): Promise<Blob> {
+  const response = await fetch(dataUrl);
+  return response.blob();
+}
 
 export interface NFTMintResult {
   success: boolean;
@@ -33,15 +53,45 @@ export async function mintGameNFT(
     console.log('👤 [NFT Service] Recipient:', recipientAddress);
     console.log('📝 [NFT Service] Game prompt:', gamePrompt);
 
-    // Step 1: Upload screenshot to IPFS
-    console.log('📤 [NFT Service] Step 1: Uploading screenshot to IPFS...');
-    const timestamp = Date.now();
-    const imageFilename = `game-screenshot-${timestamp}.png`;
-    const imageIpfsUri = await uploadImageToIPFS(screenshot, imageFilename);
-    console.log('✅ [NFT Service] Screenshot uploaded:', imageIpfsUri);
+    // Step 1: Generate custom NFT image using Grok AI
+    console.log('🎨 [NFT Service] Step 1: Generating custom NFT image with Grok AI...');
+    const screenshotDataUrl = await blobToDataUrl(screenshot);
+    
+    const imageGenResponse = await fetch('/api/generate-nft-image', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        gamePrompt,
+        screenshotDataUrl,
+      }),
+    });
 
-    // Step 2: Create and upload metadata to IPFS
-    console.log('📤 [NFT Service] Step 2: Creating and uploading metadata...');
+    const imageGenResult = await imageGenResponse.json();
+    
+    if (!imageGenResult.success) {
+      console.warn('⚠️ [NFT Service] Image generation failed, using original screenshot');
+      console.warn('⚠️ [NFT Service] Error:', imageGenResult.error);
+      // Fall back to original screenshot
+    }
+
+    // Use generated image if available, otherwise fall back to screenshot
+    const imageToUpload = imageGenResult.success 
+      ? await dataUrlToBlob(imageGenResult.imageBase64)
+      : screenshot;
+    
+    if (imageGenResult.success) {
+      console.log('✅ [NFT Service] Custom NFT image generated successfully!');
+    }
+
+    // Step 2: Upload image to IPFS
+    console.log('📤 [NFT Service] Step 2: Uploading NFT image to IPFS...');
+    const timestamp = Date.now();
+    const imageFilename = `game-nft-${timestamp}.png`;
+    const imageIpfsUri = await uploadImageToIPFS(imageToUpload, imageFilename);
+    console.log('✅ [NFT Service] NFT image uploaded:', imageIpfsUri);
+
+    // Step 3: Create and upload metadata to IPFS
+    console.log('📤 [NFT Service] Step 3: Creating and uploading metadata...');
     
     // Create a short, catchy name from the game prompt
     const generateGameName = (prompt: string): string => {
@@ -96,8 +146,8 @@ export async function mintGameNFT(
     const metadataUri = await uploadMetadataToIPFS(metadata);
     console.log('✅ [NFT Service] Metadata uploaded:', metadataUri);
 
-    // Step 3: Mint the NFT
-    console.log('⛓️ [NFT Service] Step 3: Minting NFT on Base network...');
+    // Step 4: Mint the NFT
+    console.log('⛓️ [NFT Service] Step 4: Minting NFT on Base network...');
     const response = await fetch('/api/nft/mint', {
       method: 'POST',
       headers: {
