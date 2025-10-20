@@ -3,8 +3,7 @@
 import { useState, useEffect } from 'react';
 import { sdk } from '@farcaster/miniapp-sdk';
 import { useAccount } from 'wagmi';
-import { WalletConnect } from '../components/payments';
-import { PaymentModalDebug } from '../components/payments/PaymentModalDebug';
+import { WalletConnect, PaymentModal } from '../components/payments';
 import { DemoGames, DynamicGameLoader } from '../components/browser-games';
 import { mintGameNFT } from '../services/nft';
 
@@ -315,8 +314,8 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Payment Modal - Debug Version */}
-      <PaymentModalDebug
+      {/* Payment Modal */}
+      <PaymentModal
         isOpen={showPaymentModal}
         onClose={() => setShowPaymentModal(false)}
         onPaymentSuccess={handlePaymentSuccess}
