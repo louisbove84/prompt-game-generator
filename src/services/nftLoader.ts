@@ -70,10 +70,15 @@ export async function loadNFTsFromWallet(walletAddress: string): Promise<NFTLoad
     for (const nft of data.ownedNfts) {
       console.log('🔄 [NFT Loader] Processing NFT:', nft.tokenId);
       try {
+        // Use metadata from Alchemy response if available, otherwise fetch from URI
+        let metadata = nft.raw?.metadata;
         const metadataUri = nft.tokenUri?.raw || nft.tokenUri?.gateway;
-        console.log('📄 [NFT Loader] Metadata URI:', metadataUri);
         
-        const metadata = await loadNFTMetadata(metadataUri);
+        if (!metadata && metadataUri) {
+          console.log('📄 [NFT Loader] Metadata not in response, fetching from URI:', metadataUri);
+          metadata = await loadNFTMetadata(metadataUri);
+        }
+        
         console.log('📋 [NFT Loader] Metadata loaded:', metadata);
         
         if (metadata) {
@@ -88,7 +93,7 @@ export async function loadNFTsFromWallet(walletAddress: string): Promise<NFTLoad
             contractAddress: nft.contract.address,
             name: metadata.name || `Game NFT #${nft.tokenId}`,
             description: metadata.description || '',
-            image: metadata.image || '',
+            image: metadata.image || nft.image?.cachedUrl || '',
             gameCode: gameCode,
             gamePrompt: gamePrompt,
             metadataUri: metadataUri || '',
