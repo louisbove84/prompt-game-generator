@@ -81,6 +81,7 @@ export default function Home() {
         body: JSON.stringify({
           userPrompt: gamePrompt,
           temperature: 0.7,
+          gameType: 'browser', // Request browser-optimized game
         }),
       });
       

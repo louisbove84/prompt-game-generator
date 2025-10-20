@@ -68,6 +68,7 @@ export default function FramePage() {
         body: JSON.stringify({
           userPrompt: gamePrompt,
           temperature: 0.7,
+          gameType: 'frame', // Request frame-optimized game
         }),
       });
       

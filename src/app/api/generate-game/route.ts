@@ -4,7 +4,8 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { GAME_TEMPLATE, GAME_GENERATION_SYSTEM_PROMPT } from '@/templates/gameTemplate';
+import { GAME_TEMPLATE, GAME_GENERATION_SYSTEM_PROMPT } from '@/templates/frameGameTemplate';
+import { BROWSER_GAME_TEMPLATE, BROWSER_GAME_SYSTEM_PROMPT } from '@/templates/browserGameTemplate';
 
 const GROK_API_URL = 'https://api.x.ai/v1/chat/completions';
 
@@ -12,7 +13,14 @@ export async function POST(request: NextRequest) {
   console.log('🎮 [API Route] Game generation request received');
   
   try {
-    const { userPrompt, temperature = 0.7 } = await request.json();
+    const { userPrompt, temperature = 0.7, gameType = 'browser' } = await request.json();
+    
+    // Select template based on game type
+    const isBrowserGame = gameType === 'browser';
+    const template = isBrowserGame ? BROWSER_GAME_TEMPLATE : GAME_TEMPLATE;
+    const systemPrompt = isBrowserGame ? BROWSER_GAME_SYSTEM_PROMPT : GAME_GENERATION_SYSTEM_PROMPT;
+    
+    console.log(`🎯 [API Route] Generating ${isBrowserGame ? 'BROWSER' : 'FRAME'} game`);
     
     if (!userPrompt) {
       return NextResponse.json(
@@ -48,17 +56,17 @@ export async function POST(request: NextRequest) {
         messages: [
           {
             role: 'system',
-            content: GAME_GENERATION_SYSTEM_PROMPT
+            content: systemPrompt
           },
           {
             role: 'user',
-            content: `Create a game based on this description:
+            content: `Create a ${isBrowserGame ? 'sophisticated full-screen browser' : 'lightweight mobile-friendly'} game based on this description:
 
 "${userPrompt}"
 
 Use this template as a guide:
 
-${GAME_TEMPLATE}
+${template}
 
 Remember to:
 1. Return ONLY the complete .tsx file content
