@@ -116,10 +116,32 @@ Resolution: 1200x1200px, high quality, suitable for NFT display.`;
 
     // Download the image and convert to base64 for IPFS upload
     console.log('⬇️ [Image Generation] Downloading generated image...');
+    console.log('🔗 [Image Generation] Image URL:', imageUrl);
+    
     const imageResponse = await fetch(imageUrl);
+    console.log('📥 [Image Generation] Image fetch response:', {
+      status: imageResponse.status,
+      ok: imageResponse.ok,
+      headers: Object.fromEntries(imageResponse.headers.entries())
+    });
+    
+    if (!imageResponse.ok) {
+      console.error('❌ [Image Generation] Failed to download image:', imageResponse.status);
+      return NextResponse.json(
+        { success: false, error: `Failed to download generated image: ${imageResponse.status}` },
+        { status: imageResponse.status }
+      );
+    }
+    
     const imageBlob = await imageResponse.blob();
+    console.log('📊 [Image Generation] Image blob:', {
+      size: imageBlob.size,
+      type: imageBlob.type
+    });
+    
     const imageBuffer = Buffer.from(await imageBlob.arrayBuffer());
     const imageBase64 = imageBuffer.toString('base64');
+    console.log('📊 [Image Generation] Base64 length:', imageBase64.length);
 
     console.log('✅ [Image Generation] Image downloaded and converted');
     console.log('📊 [Image Generation] Image size:', (imageBuffer.length / 1024).toFixed(2), 'KB');
