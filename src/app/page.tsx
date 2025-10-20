@@ -6,6 +6,8 @@ import { useAccount } from 'wagmi';
 import { WalletConnect, PaymentModal } from '../components/payments';
 import { DemoGames, DynamicGameLoader } from '../components/browser-games';
 import { mintGameNFT } from '../services/nft';
+import NFTSelector from '../components/NFTSelector';
+import { NFTData } from '../services/nftLoader';
 
 export default function Home() {
   const { isConnected, address } = useAccount();
@@ -21,6 +23,8 @@ export default function Home() {
   const [nftResult, setNftResult] = useState<any>(null);
   const [currentGamePrompt, setCurrentGamePrompt] = useState<string>('');
   const [currentGameCode, setCurrentGameCode] = useState<string>('');
+  const [showNFTSelector, setShowNFTSelector] = useState(false);
+  const [loadedFromNFT, setLoadedFromNFT] = useState(false);
 
   // Debug log for payment status
   useEffect(() => {
@@ -121,6 +125,24 @@ export default function Home() {
     setNftResult(null);
     setCurrentGamePrompt('');
     setCurrentGameCode('');
+    setLoadedFromNFT(false);
+  };
+
+  const handleNFTSelected = (nft: NFTData) => {
+    console.log('🎮 [Browser] NFT selected:', nft.name);
+    console.log('📝 [Browser] Game prompt:', nft.gamePrompt);
+    console.log('💾 [Browser] Game code length:', nft.gameCode?.length || 0);
+    
+    if (nft.gameCode) {
+      setCurrentGameCode(nft.gameCode);
+      setCurrentGamePrompt(nft.gamePrompt || 'Loaded from NFT');
+      setGeneratedGame(nft.gameCode);
+      setLoadedFromNFT(true);
+      setShowNFTSelector(false);
+      setHasPaid(true); // Mark as paid since it's from an existing NFT
+    } else {
+      alert('This NFT does not contain game code.');
+    }
   };
 
   const handleScreenshotCaptured = async (screenshot: Blob) => {
@@ -129,6 +151,13 @@ export default function Home() {
     console.log('📊 [Main] Screenshot size:', (screenshot.size / 1024).toFixed(2), 'KB');
     console.log('💰 [Main] Has paid:', hasPaid);
     console.log('🎨 [Main] NFT already minted:', nftMinted);
+    console.log('🔄 [Main] Loaded from NFT:', loadedFromNFT);
+    
+    // Don't mint NFT if this game was loaded from an existing NFT
+    if (loadedFromNFT) {
+      console.log('ℹ️ [Main NFT] Game loaded from existing NFT, skipping mint');
+      return;
+    }
     
     if (!address) {
       console.error('❌ [NFT] No wallet address found - wallet not connected!');
@@ -308,6 +337,24 @@ export default function Home() {
           </div>
         </div>
 
+        {/* Load NFT Games Section */}
+        {isConnected && (
+          <div className="text-center mb-12">
+            <button
+              onClick={() => setShowNFTSelector(true)}
+              className="bg-gradient-to-br from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white font-bold py-4 px-8 rounded-2xl transition-all duration-300 transform hover:scale-105 border border-white/20 shadow-lg"
+            >
+              <div className="flex items-center space-x-3">
+                <span className="text-2xl">🎨</span>
+                <div>
+                  <div className="text-lg">Load Your Game NFTs</div>
+                  <div className="text-sm text-purple-100">Play games you've created before</div>
+                </div>
+              </div>
+            </button>
+          </div>
+        )}
+
         {/* Demo Games Section */}
         <DemoGames onPlayGame={playExistingGame} />
 
@@ -322,6 +369,13 @@ export default function Home() {
         isOpen={showPaymentModal}
         onClose={() => setShowPaymentModal(false)}
         onPaymentSuccess={handlePaymentSuccess}
+      />
+
+      {/* NFT Selector Modal */}
+      <NFTSelector
+        isOpen={showNFTSelector}
+        onClose={() => setShowNFTSelector(false)}
+        onNFTSelected={handleNFTSelected}
       />
     </div>
   );
