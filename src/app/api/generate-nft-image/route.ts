@@ -63,10 +63,9 @@ Resolution: 1200x1200px, high quality, suitable for NFT display.`;
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
+        model: 'grok-2-image', // Grok's image generation model
         prompt: imagePrompt,
-        model: 'grok-vision-beta', // Grok's vision model for image generation
         n: 1, // Generate 1 image
-        size: '1024x1024', // Standard NFT size
         response_format: 'url', // Get image URL
       }),
     });
@@ -74,6 +73,15 @@ Resolution: 1200x1200px, high quality, suitable for NFT display.`;
     if (!response.ok) {
       const errorText = await response.text();
       console.error('❌ [Image Generation] Grok API error:', response.status, errorText);
+      console.error('❌ [Image Generation] Request was:', {
+        url: GROK_API_URL,
+        model: 'grok-2-image',
+        promptLength: imagePrompt.length,
+        headers: {
+          'Authorization': 'Bearer [REDACTED]',
+          'Content-Type': 'application/json',
+        }
+      });
       return NextResponse.json(
         { 
           success: false, 
@@ -85,12 +93,14 @@ Resolution: 1200x1200px, high quality, suitable for NFT display.`;
 
     const result = await response.json();
     console.log('✅ [Image Generation] Grok API response received');
+    console.log('📊 [Image Generation] Response structure:', JSON.stringify(result, null, 2));
 
     // Extract image URL from response
     if (!result.data || !result.data[0] || !result.data[0].url) {
-      console.error('❌ [Image Generation] Invalid response format:', result);
+      console.error('❌ [Image Generation] Invalid response format:', JSON.stringify(result, null, 2));
+      console.error('❌ [Image Generation] Expected: { data: [{ url: "..." }] }');
       return NextResponse.json(
-        { success: false, error: 'Invalid response from Grok API' },
+        { success: false, error: 'Invalid response from Grok API - missing image URL' },
         { status: 500 }
       );
     }
