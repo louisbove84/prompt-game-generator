@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { sdk } from '@farcaster/miniapp-sdk';
 import { useAccount } from 'wagmi';
 import { WalletConnect, PaymentModal } from '../components/payments';
-import { DemoGames, DynamicGameLoader } from '../components/games';
+import { DemoGames, DynamicGameLoader } from '../components/browser-games';
 import { mintGameNFT } from '../services/nft';
 
 export default function Home() {

@@ -1,8 +1,8 @@
 {
   "contractAddress": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
-  "deploymentTx": "0x0665dae53b9710ba2d50791560917c6adda5c053e60ee0d21f5980557c11eb23",
-  "network": "hardhat",
+  "deploymentTx": "0xeb2afa846f9b033af8f5b4358dbf0f3e36480edec3b9669a3e568791da64b780",
+  "network": "localhost",
   "chainId": 31337,
   "owner": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
-  "timestamp": "2025-10-18T16:12:22.415Z"
+  "timestamp": "2025-10-20T08:55:24.823Z"
 }

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { sdk } from '@farcaster/miniapp-sdk';
 import { useAccount } from 'wagmi';
-import { SpaceInvadersGame, ThisIsFineGame, DynamicGameLoader } from '../../components/games';
+import { SpaceInvadersGame, ThisIsFineGame, DynamicGameLoader } from '../../components/frame-games';
 import { WalletConnect, PaymentModal } from '../../components/payments';
 
 export default function FramePage() {
