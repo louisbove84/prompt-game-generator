@@ -26,8 +26,14 @@ if (typeof window !== 'undefined') {
         injected(), // For MetaMask and other injected wallets
       ],
       transports: {
-        [base.id]: http(process.env.NEXT_PUBLIC_BASE_RPC_URL || 'https://mainnet.base.org'),
-        [baseSepolia.id]: http(process.env.NEXT_PUBLIC_BASE_SEPOLIA_RPC_URL || 'https://sepolia.base.org'),
+        [base.id]: http(process.env.NEXT_PUBLIC_BASE_RPC_URL || 'https://mainnet.base.org', {
+          retryCount: 3,
+          retryDelay: 1000,
+        }),
+        [baseSepolia.id]: http(process.env.NEXT_PUBLIC_BASE_SEPOLIA_RPC_URL || 'https://sepolia.base.org', {
+          retryCount: 3,
+          retryDelay: 1000,
+        }),
       },
       ssr: true,
     });

@@ -52,6 +52,18 @@ export function PaymentModal({ isOpen, onClose, onPaymentSuccess }: PaymentModal
       });
     } catch (err) {
       console.error('Payment failed:', err);
+      
+      // Check if it's a network/RPC error
+      const errorMessage = err instanceof Error ? err.message : String(err);
+      if (errorMessage.includes('502') || errorMessage.includes('Failed to parse network response')) {
+        alert('⚠️ Network Error\n\nThe Base network RPC is temporarily unavailable. This is usually a temporary issue.\n\nPlease try again in a few moments, or try switching to a different wallet (MetaMask) if using Coinbase Wallet.');
+      } else if (errorMessage.includes('User rejected') || errorMessage.includes('User denied')) {
+        // User cancelled - don't show error
+        console.log('User cancelled transaction');
+      } else {
+        alert(`Payment failed: ${errorMessage}`);
+      }
+      
       setIsProcessing(false);
     }
   };
