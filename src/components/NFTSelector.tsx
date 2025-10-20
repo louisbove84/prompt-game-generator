@@ -129,7 +129,7 @@ const NFTSelector: React.FC<NFTSelectorProps> = ({ isOpen, onNFTSelected, onClos
                   className="border border-gray-200 rounded-lg p-4 hover:shadow-lg transition-shadow cursor-pointer"
                   onClick={() => handleNFTSelect(nft)}
                 >
-                  <div className="aspect-square bg-gray-100 rounded-lg mb-3 overflow-hidden">
+                  <div className="aspect-square bg-gray-100 rounded-lg mb-3 overflow-hidden w-24 h-24 mx-auto">
                     {nft.image ? (
                       <img
                         src={nft.image}
@@ -138,24 +138,16 @@ const NFTSelector: React.FC<NFTSelectorProps> = ({ isOpen, onNFTSelected, onClos
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-gray-400">
-                        <span className="text-4xl">🎮</span>
+                        <span className="text-2xl">🎮</span>
                       </div>
                     )}
                   </div>
-                  <div className="flex items-start justify-between mb-1">
-                    <h3 className="font-bold text-gray-900 flex-1">{nft.name}</h3>
-                    <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full font-semibold ml-2">
+                  <div className="text-center mb-3">
+                    <h3 className="font-bold text-gray-900 text-lg">{nft.name}</h3>
+                    <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full font-semibold mt-1 inline-block">
                       🎮 Playable
                     </span>
                   </div>
-                  <p className="text-sm text-gray-600 mb-2 line-clamp-2">
-                    {nft.description}
-                  </p>
-                  {nft.gamePrompt && (
-                    <p className="text-xs text-blue-600 mb-2">
-                      <strong>Prompt:</strong> {nft.gamePrompt.substring(0, 50)}...
-                    </p>
-                  )}
                   <div className="flex justify-between items-center">
                     <span className="text-xs text-gray-500">Token #{nft.tokenId}</span>
                     <button
