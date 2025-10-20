@@ -5,9 +5,10 @@ import { sdk } from '@farcaster/miniapp-sdk';
 import { useAccount } from 'wagmi';
 import { SpaceInvadersGame, ThisIsFineGame, DynamicGameLoader } from '../../components/frame-games';
 import { WalletConnect, PaymentModal } from '../../components/payments';
+import { mintGameNFT } from '../../services/nft';
 
 export default function FramePage() {
-  const { isConnected } = useAccount();
+  const { isConnected, address } = useAccount();
   const [gamePrompt, setGamePrompt] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedGame, setGeneratedGame] = useState<string | null>(null);
@@ -16,6 +17,10 @@ export default function FramePage() {
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [hasPaid, setHasPaid] = useState(false);
   const [generationStatus, setGenerationStatus] = useState<string>('');
+  const [isMintingNFT, setIsMintingNFT] = useState(false);
+  const [nftMinted, setNftMinted] = useState(false);
+  const [nftResult, setNftResult] = useState<any>(null);
+  const [currentGamePrompt, setCurrentGamePrompt] = useState<string>('');
 
   useEffect(() => {
     // Call sdk.actions.ready() after the app is fully loaded
@@ -47,9 +52,13 @@ export default function FramePage() {
       setShowPaymentModal(true);
       return;
     }
+
+    // Save the prompt for NFT minting later
+    setCurrentGamePrompt(gamePrompt);
     
     setIsGenerating(true);
     setError(null);
+    setNftMinted(false);
     setGenerationStatus('🔍 Analyzing your prompt...');
     
     try {
@@ -94,6 +103,53 @@ export default function FramePage() {
     setGameType('none');
     setError(null);
     setHasPaid(false); // Reset payment requirement
+    setNftMinted(false);
+    setNftResult(null);
+    setCurrentGamePrompt('');
+  };
+
+  const handleScreenshotCaptured = async (screenshot: Blob) => {
+    console.log('📸 [Frame] handleScreenshotCaptured called!');
+    console.log('👛 [Frame] Wallet address:', address || 'NOT CONNECTED');
+    console.log('📊 [Frame] Screenshot size:', (screenshot.size / 1024).toFixed(2), 'KB');
+    console.log('💰 [Frame] Has paid:', hasPaid);
+    console.log('🎨 [Frame] NFT already minted:', nftMinted);
+    
+    if (!address) {
+      console.error('❌ [Frame NFT] No wallet address found - wallet not connected!');
+      alert('⚠️ Please connect your wallet to mint an NFT');
+      return;
+    }
+
+    if (nftMinted || isMintingNFT) {
+      console.log('ℹ️ [Frame NFT] NFT already minted or minting in progress');
+      return;
+    }
+
+    console.log('📸 [Frame] Screenshot captured, starting NFT mint...');
+    setIsMintingNFT(true);
+
+    try {
+      const result = await mintGameNFT(screenshot, address, currentGamePrompt);
+      
+      if (result.success) {
+        console.log('✅ [Frame] NFT minted successfully!');
+        setNftMinted(true);
+        setNftResult(result);
+        
+        // Show success notification
+        const tokenInfo = result.tokenId ? `\nToken ID: ${result.tokenId}` : '';
+        const message = `🎉 NFT Minted Successfully!\n\nYour game screenshot has been minted as an NFT and sent to your wallet!${tokenInfo}\n\nTransaction: ${result.transactionHash}\n\nView on BaseScan: ${result.nftViewUrl}\n\nNote: It may take a few minutes for OpenSea to index your NFT.`;
+        alert(message);
+      } else {
+        console.error('❌ [Frame] NFT minting failed:', result.error);
+        // Don't show error to user, just log it - they already got their game
+      }
+    } catch (error) {
+      console.error('❌ [Frame] Exception during NFT mint:', error);
+    } finally {
+      setIsMintingNFT(false);
+    }
   };
 
   const handlePaymentSuccess = () => {
@@ -108,14 +164,66 @@ export default function FramePage() {
   // Show generated game if available
   if (generatedGame) {
     return (
-      <DynamicGameLoader 
-        gameCode={generatedGame} 
-        onBack={handleBackToGenerator}
-        onError={(err) => {
-          setError(err);
-          setGeneratedGame(null);
-        }}
-      />
+      <div className="relative">
+        {isMintingNFT && (
+          <div className="fixed top-4 right-4 z-50 bg-purple-600 text-white px-6 py-3 rounded-lg shadow-lg flex items-center space-x-3">
+            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+            <span>Minting your NFT...</span>
+          </div>
+        )}
+        {nftMinted && nftResult && (
+          <div className="fixed top-4 right-4 z-50 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg max-w-sm">
+            <div className="flex items-start space-x-2">
+              <span className="text-2xl">🎉</span>
+              <div className="flex-1">
+                <div className="font-bold mb-1">NFT Minted!</div>
+                <div className="text-sm space-y-1">
+                  <div>
+                    <a 
+                      href={nftResult.nftViewUrl || nftResult.explorerUrl} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="underline hover:text-green-200 font-medium"
+                    >
+                      View on BaseScan →
+                    </a>
+                  </div>
+                  {nftResult.openseaUrl && nftResult.tokenId && (
+                    <div>
+                      <a 
+                        href={nftResult.openseaUrl} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="underline hover:text-green-200"
+                      >
+                        View on OpenSea →
+                      </a>
+                      <span className="text-xs block text-green-100">
+                        (may take a few minutes to index)
+                      </span>
+                    </div>
+                  )}
+                  {nftResult.tokenId && (
+                    <div className="text-xs text-green-100">
+                      Token ID: {nftResult.tokenId}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+        <DynamicGameLoader 
+          gameCode={generatedGame} 
+          onBack={handleBackToGenerator}
+          captureScreenshot={hasPaid && !nftMinted}
+          onScreenshotCaptured={handleScreenshotCaptured}
+          onError={(err) => {
+            setError(err);
+            setGeneratedGame(null);
+          }}
+        />
+      </div>
     );
   }
 
