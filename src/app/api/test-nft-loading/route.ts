@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { loadNFTsFromWallet } from '../../services/nftLoader';
+import { loadNFTsFromWallet } from '../../../services/nftLoader';
 
 /**
  * Test NFT Loading
