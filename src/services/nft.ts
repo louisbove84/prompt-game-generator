@@ -72,6 +72,7 @@ export async function mintGameNFT(
     if (!imageGenResult.success) {
       console.warn('⚠️ [NFT Service] Image generation failed, using original screenshot');
       console.warn('⚠️ [NFT Service] Error:', imageGenResult.error);
+      console.warn('⚠️ [NFT Service] Full error response:', JSON.stringify(imageGenResult, null, 2));
       // Fall back to original screenshot
     }
 

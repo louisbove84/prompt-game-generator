@@ -26,6 +26,11 @@ export async function POST(request: NextRequest) {
 
     if (!GROK_API_KEY) {
       console.error('❌ [Image Generation] API key not configured');
+      console.error('❌ [Image Generation] Environment check:', {
+        hasKey: !!process.env.NEXT_PUBLIC_GROK_API_KEY,
+        keyLength: process.env.NEXT_PUBLIC_GROK_API_KEY?.length || 0,
+        keyPrefix: process.env.NEXT_PUBLIC_GROK_API_KEY?.substring(0, 10) || 'undefined'
+      });
       return NextResponse.json(
         { success: false, error: 'Grok API key is not configured' },
         { status: 500 }
