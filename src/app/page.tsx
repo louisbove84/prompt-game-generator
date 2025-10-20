@@ -20,6 +20,7 @@ export default function Home() {
   const [nftMinted, setNftMinted] = useState(false);
   const [nftResult, setNftResult] = useState<any>(null);
   const [currentGamePrompt, setCurrentGamePrompt] = useState<string>('');
+  const [currentGameCode, setCurrentGameCode] = useState<string>('');
 
   // Debug log for payment status
   useEffect(() => {
@@ -95,6 +96,7 @@ export default function Home() {
         console.log('📊 [Main] Tokens used:', result.tokensUsed);
         console.log('📦 [Main] Code size:', result.gameCode.length, 'chars');
         setGenerationStatus('✅ Game generated! Loading...');
+        setCurrentGameCode(result.gameCode); // Save game code for NFT
         setTimeout(() => setGeneratedGame(result.gameCode), 500);
       } else {
         console.error('❌ [Main] Generation failed:', result.error);
@@ -118,6 +120,7 @@ export default function Home() {
     setNftMinted(false);
     setNftResult(null);
     setCurrentGamePrompt('');
+    setCurrentGameCode('');
   };
 
   const handleScreenshotCaptured = async (screenshot: Blob) => {
@@ -142,7 +145,7 @@ export default function Home() {
     setIsMintingNFT(true);
 
     try {
-      const result = await mintGameNFT(screenshot, address, currentGamePrompt);
+      const result = await mintGameNFT(screenshot, address, currentGamePrompt, currentGameCode);
       
       if (result.success) {
         console.log('✅ [Main] NFT minted successfully!');

@@ -356,7 +356,7 @@ const DynamicGameLoader: React.FC<DynamicGameLoaderProps> = ({
       {onBack && (
         <button
           onClick={onBack}
-          className="absolute top-4 left-4 z-50 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-lg"
+          className="absolute bottom-4 right-4 z-50 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-lg"
         >
           ← Back to Generator
         </button>

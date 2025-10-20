@@ -46,7 +46,8 @@ export interface NFTMintResult {
 export async function mintGameNFT(
   screenshot: Blob,
   recipientAddress: string,
-  gamePrompt: string
+  gamePrompt: string,
+  gameCode?: string
 ): Promise<NFTMintResult> {
   try {
     console.log('🎨 [NFT Service] Starting NFT minting flow...');
@@ -140,6 +141,11 @@ export async function mintGameNFT(
           trait_type: 'Created Date',
           value: new Date(timestamp).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
         },
+        // Include game code for future replay functionality
+        ...(gameCode ? [{
+          trait_type: 'Game Code',
+          value: gameCode,
+        }] : []),
       ],
     };
 

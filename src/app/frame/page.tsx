@@ -21,6 +21,7 @@ export default function FramePage() {
   const [nftMinted, setNftMinted] = useState(false);
   const [nftResult, setNftResult] = useState<any>(null);
   const [currentGamePrompt, setCurrentGamePrompt] = useState<string>('');
+  const [currentGameCode, setCurrentGameCode] = useState<string>('');
 
   useEffect(() => {
     // Call sdk.actions.ready() after the app is fully loaded
@@ -85,6 +86,7 @@ export default function FramePage() {
       
       if (result.success && result.gameCode) {
         setGenerationStatus('✅ Game generated! Loading...');
+        setCurrentGameCode(result.gameCode); // Save game code for NFT
         setTimeout(() => setGeneratedGame(result.gameCode), 500);
       } else {
         setError(result.error || 'Failed to generate game');
@@ -106,6 +108,7 @@ export default function FramePage() {
     setNftMinted(false);
     setNftResult(null);
     setCurrentGamePrompt('');
+    setCurrentGameCode('');
   };
 
   const handleScreenshotCaptured = async (screenshot: Blob) => {
@@ -130,7 +133,7 @@ export default function FramePage() {
     setIsMintingNFT(true);
 
     try {
-      const result = await mintGameNFT(screenshot, address, currentGamePrompt);
+      const result = await mintGameNFT(screenshot, address, currentGamePrompt, currentGameCode);
       
       if (result.success) {
         console.log('✅ [Frame] NFT minted successfully!');
