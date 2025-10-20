@@ -29,7 +29,10 @@ export async function loadNFTsFromWallet(walletAddress: string): Promise<NFTLoad
     
     // Get the contract address from environment
     const contractAddress = process.env.NEXT_PUBLIC_NFT_CONTRACT_ADDRESS;
+    console.log('📋 [NFT Loader] Contract address:', contractAddress);
+    
     if (!contractAddress) {
+      console.error('❌ [NFT Loader] NFT contract address not configured');
       return { success: false, error: 'NFT contract address not configured' };
     }
 
@@ -41,36 +44,54 @@ export async function loadNFTsFromWallet(walletAddress: string): Promise<NFTLoad
     }
 
     // Use Alchemy API for better performance
-    const response = await fetch(
-      `https://base-mainnet.g.alchemy.com/nft/v3/${alchemyApiKey}/getNFTsForOwner?owner=${walletAddress}&contractAddresses[]=${contractAddress}&withMetadata=true`
-    );
+    const alchemyUrl = `https://base-mainnet.g.alchemy.com/nft/v3/${alchemyApiKey}/getNFTsForOwner?owner=${walletAddress}&contractAddresses[]=${contractAddress}&withMetadata=true`;
+    console.log('🌐 [NFT Loader] Alchemy URL:', alchemyUrl);
+    
+    const response = await fetch(alchemyUrl);
+    console.log('📡 [NFT Loader] Alchemy response status:', response.status);
 
     if (!response.ok) {
-      console.error('❌ [NFT Loader] Alchemy API error:', response.status);
+      const errorText = await response.text();
+      console.error('❌ [NFT Loader] Alchemy API error:', response.status, errorText);
       return await loadNFTsDirect(contractAddress, walletAddress);
     }
 
     const data = await response.json();
-    console.log('📊 [NFT Loader] Alchemy response:', data);
+    console.log('📊 [NFT Loader] Alchemy response:', JSON.stringify(data, null, 2));
 
     if (!data.ownedNfts || data.ownedNfts.length === 0) {
+      console.log('📭 [NFT Loader] No NFTs found for wallet');
       return { success: true, nfts: [] };
     }
 
+    console.log('🎯 [NFT Loader] Found', data.ownedNfts.length, 'NFTs, processing metadata...');
     const nfts: NFTData[] = [];
+    
     for (const nft of data.ownedNfts) {
+      console.log('🔄 [NFT Loader] Processing NFT:', nft.tokenId);
       try {
-        const metadata = await loadNFTMetadata(nft.tokenUri?.raw || nft.tokenUri?.gateway);
+        const metadataUri = nft.tokenUri?.raw || nft.tokenUri?.gateway;
+        console.log('📄 [NFT Loader] Metadata URI:', metadataUri);
+        
+        const metadata = await loadNFTMetadata(metadataUri);
+        console.log('📋 [NFT Loader] Metadata loaded:', metadata);
+        
         if (metadata) {
+          const gameCode = metadata.attributes?.find((attr: any) => attr.trait_type === 'Game Code')?.value;
+          const gamePrompt = metadata.attributes?.find((attr: any) => attr.trait_type === 'Game Prompt')?.value;
+          
+          console.log('🎮 [NFT Loader] Game code found:', !!gameCode, 'Length:', gameCode?.length || 0);
+          console.log('📝 [NFT Loader] Game prompt found:', !!gamePrompt, 'Length:', gamePrompt?.length || 0);
+          
           nfts.push({
             tokenId: nft.tokenId,
             contractAddress: nft.contract.address,
             name: metadata.name || `Game NFT #${nft.tokenId}`,
             description: metadata.description || '',
             image: metadata.image || '',
-            gameCode: metadata.attributes?.find((attr: any) => attr.trait_type === 'Game Code')?.value,
-            gamePrompt: metadata.attributes?.find((attr: any) => attr.trait_type === 'Game Prompt')?.value,
-            metadataUri: nft.tokenUri?.raw || nft.tokenUri?.gateway || '',
+            gameCode: gameCode,
+            gamePrompt: gamePrompt,
+            metadataUri: metadataUri || '',
           });
         }
       } catch (err) {
