@@ -9,6 +9,8 @@ interface DynamicGameLoaderProps {
   onBack?: () => void;
   onScreenshotCaptured?: (screenshot: Blob) => void;
   captureScreenshot?: boolean; // Whether to capture screenshot after game loads
+  isMintingNFT?: boolean; // External minting state to sync with
+  onMintingStateChange?: (isMinting: boolean) => void; // Callback to update external minting state
 }
 
 /**
@@ -24,13 +26,30 @@ const DynamicGameLoader: React.FC<DynamicGameLoaderProps> = ({
   onError,
   onBack,
   onScreenshotCaptured,
-  captureScreenshot = false
+  captureScreenshot = false,
+  isMintingNFT: externalIsMintingNFT = false,
+  onMintingStateChange
 }) => {
   const [GameComponent, setGameComponent] = useState<React.ComponentType | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const gameContainerRef = useRef<HTMLDivElement>(null);
   const [screenshotTaken, setScreenshotTaken] = useState(false);
+  const [isMintingNFT, setIsMintingNFT] = useState(false);
+
+  // Navigation warning to prevent NFT loss during minting
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (externalIsMintingNFT) {
+        e.preventDefault();
+        e.returnValue = 'NFT is being minted. Are you sure you want to leave?';
+        return 'NFT is being minted. Are you sure you want to leave?';
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [externalIsMintingNFT]);
 
   useEffect(() => {
     const loadGame = async () => {
@@ -200,6 +219,8 @@ const DynamicGameLoader: React.FC<DynamicGameLoaderProps> = ({
                 if (blob) {
                   console.log('✅ [Screenshot] Direct canvas capture succeeded!');
                   console.log('📊 [Screenshot] Blob size:', (blob.size / 1024).toFixed(2), 'KB');
+                  setIsMintingNFT(true);
+                  onMintingStateChange?.(true);
                   onScreenshotCaptured?.(blob);
                   setScreenshotTaken(true);
                   resolve();
@@ -238,6 +259,8 @@ const DynamicGameLoader: React.FC<DynamicGameLoaderProps> = ({
             console.log('✅ [Screenshot] Screenshot captured successfully!');
             console.log('📊 [Screenshot] Blob size:', (blob.size / 1024).toFixed(2), 'KB');
             console.log('📞 [Screenshot] Calling onScreenshotCaptured callback...');
+            setIsMintingNFT(true);
+            onMintingStateChange?.(true);
             onScreenshotCaptured?.(blob);
             setScreenshotTaken(true);
           } else {
@@ -266,6 +289,8 @@ const DynamicGameLoader: React.FC<DynamicGameLoaderProps> = ({
               if (blob) {
                 console.log('✅ [Screenshot] Direct canvas capture succeeded!');
                 console.log('📊 [Screenshot] Blob size:', (blob.size / 1024).toFixed(2), 'KB');
+                setIsMintingNFT(true);
+                onMintingStateChange?.(true);
                 onScreenshotCaptured?.(blob);
                 setScreenshotTaken(true);
               } else {
@@ -298,6 +323,8 @@ const DynamicGameLoader: React.FC<DynamicGameLoaderProps> = ({
             canvas.toBlob((blob) => {
               if (blob) {
                 console.log('✅ [Screenshot] Fallback blob created:', (blob.size / 1024).toFixed(2), 'KB');
+                setIsMintingNFT(true);
+                onMintingStateChange?.(true);
                 onScreenshotCaptured?.(blob);
                 setScreenshotTaken(true);
               }

@@ -254,6 +254,8 @@ export default function FramePage() {
             setError(err);
             setGeneratedGame(null);
           }}
+          isMintingNFT={isMintingNFT}
+          onMintingStateChange={setIsMintingNFT}
         />
       </div>
     );

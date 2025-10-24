@@ -265,6 +265,8 @@ export default function Home() {
           onBack={handleBackToGenerator}
           captureScreenshot={hasPaid && !nftMinted}
           onScreenshotCaptured={handleScreenshotCaptured}
+          isMintingNFT={isMintingNFT}
+          onMintingStateChange={setIsMintingNFT}
         />
       </div>
     );
