@@ -8,6 +8,9 @@ import { UNIFIED_GAME_TEMPLATE, UNIFIED_SYSTEM_PROMPT } from '@/templates/unifie
 
 const GROK_API_URL = 'https://api.x.ai/v1/chat/completions';
 
+// Increase timeout for game generation (Vercel allows up to 300s on Pro, 60s on Hobby)
+export const maxDuration = 60; // Maximum for Hobby plan
+
 export async function POST(request: NextRequest) {
   console.log('🎮 [API Route] Game generation request received');
   
@@ -41,13 +44,19 @@ export async function POST(request: NextRequest) {
     console.log('📝 [API Route] User prompt:', userPrompt);
     console.log('🌐 [API Route] Calling Grok API...');
 
-    const response = await fetch(GROK_API_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify({
+    // Add timeout to prevent hanging
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 55000); // 55s timeout (5s buffer)
+
+    try {
+      const response = await fetch(GROK_API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`,
+        },
+        signal: controller.signal,
+        body: JSON.stringify({
         model: 'grok-3',
         stream: false,
         temperature,
@@ -82,6 +91,7 @@ Generate the complete game component now:`
       })
     });
 
+    clearTimeout(timeout); // Clear timeout if request completes
     console.log('📡 [API Route] Response received, status:', response.status);
     
     if (!response.ok) {
@@ -134,6 +144,24 @@ Generate the complete game component now:`
       gameCode: cleanedCode,
       tokensUsed: data.usage?.total_tokens || 0
     });
+
+    } catch (fetchError) {
+      clearTimeout(timeout);
+      
+      // Handle abort/timeout specifically
+      if (fetchError instanceof Error && fetchError.name === 'AbortError') {
+        console.error('⏱️ [API Route] Request timeout');
+        return NextResponse.json(
+          { 
+            success: false, 
+            error: 'Game generation timed out. Please try a simpler prompt or try again.' 
+          },
+          { status: 504 }
+        );
+      }
+      
+      throw fetchError; // Re-throw to outer catch
+    }
 
   } catch (error) {
     console.error('❌ [API Route] FAILED:', error);
