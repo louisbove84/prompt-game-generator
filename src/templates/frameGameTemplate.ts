@@ -122,11 +122,8 @@ const GeneratedGame: React.FC = () => {
     return () => clearInterval(gameLoop);
   }, [gameState, gameWidth, gameHeight]);
 
-  // 4. Keyboard controls (Desktop/Browser ONLY)
+  // 4. Keyboard controls (works on both mobile and desktop)
   useEffect(() => {
-    // Only enable keyboard controls on desktop (non-touch devices)
-    if (isMobile) return;
-    
     const handleKeyDown = (e: KeyboardEvent) => {
       if (gameState !== 'playing') return;
       
@@ -157,12 +154,10 @@ const GeneratedGame: React.FC = () => {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [gameState, isMobile]);
+  }, [gameState]);
 
-  // 5. Touch controls (Mobile/Frame ONLY)
+  // 5. Touch controls (works on both mobile and desktop with touch)
   const handleTouch = useCallback((e: React.TouchEvent) => {
-    // Only enable touch controls on mobile/frame
-    if (!isMobile) return;
     if (gameState !== 'playing') return;
     
     const canvas = canvasRef.current;
@@ -176,7 +171,27 @@ const GeneratedGame: React.FC = () => {
     // Handle touch input - tap anywhere to jump/shoot, or use touch position
     // Example: Tap to jump/action
     e.preventDefault();
-  }, [gameState, gameWidth, isMobile]);
+  }, [gameState, gameWidth]);
+
+  // 6. Mouse controls for desktop (when not using touch)
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (gameState !== 'playing' || 'ontouchstart' in window) return;
+    
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const rect = canvas.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+
+    // Handle mouse movement
+  };
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (gameState !== 'playing' || 'ontouchstart' in window) return;
+    
+    // Handle mouse click
+  };
 
   // 6. Draw game over/won screens (only when NOT playing)
   useEffect(() => {
@@ -230,8 +245,10 @@ const GeneratedGame: React.FC = () => {
               touchAction: 'none',
               imageRendering: 'pixelated',
             }}
-            onTouchStart={isMobile ? handleTouch : undefined}
-            onTouchMove={isMobile ? handleTouch : undefined}
+            onTouchStart={handleTouch}
+            onTouchMove={handleTouch}
+            onMouseMove={handleMouseMove}
+            onMouseDown={handleMouseDown}
           />
           
           {(gameState === 'gameOver' || gameState === 'won') && (
@@ -273,11 +290,12 @@ CRITICAL REQUIREMENTS - READ CAREFULLY:
 
 4. **NO CUSTOM JSX COMPONENTS** - everything must render to canvas
 5. All game graphics MUST use canvas 2D context: ctx.fillRect(), ctx.arc(), ctx.drawImage(), etc.
-6. **CRITICAL**: Implement platform-specific controls:
-   - Desktop: ONLY keyboard (Arrow keys + Space bar)
-   - Mobile/Frame: ONLY touch (onTouchStart on canvas)
-   - Check isMobile flag to enable the correct control scheme
-   - Keyboard controls should NOT work on mobile, touch should NOT work on desktop
+6. **CRITICAL**: Implement unified controls that work on both platforms:
+   - Keyboard controls work on both mobile and desktop
+   - Touch controls work on both mobile and desktop with touch capability
+   - Mouse controls work on desktop when not using touch
+   - Use 'ontouchstart' in window to detect touch capability
+   - All control methods should work together seamlessly
 7. Be responsive: desktop ~320-420px, mobile full-screen
 8. Include game states: 'playing', 'gameOver', 'won'
 9. Include score tracking
@@ -305,15 +323,17 @@ STYLING:
 - Monospace fonts (Courier New)
 
 CONTROLS:
-- **Desktop/Browser ONLY**: Arrow keys for movement, Space bar for action/jump
+- **Unified Controls**: All control methods work on both platforms
+  * Keyboard: Arrow keys for movement, Space bar for action/jump
+  * Touch: Tap screen or use touch position for interaction
+  * Mouse: Mouse movement and clicks on desktop (when not using touch)
+  * Use 'ontouchstart' in window to detect touch capability
+  * All control methods should work together seamlessly
+- **Implementation**:
   * Use window.addEventListener for keyboard controls
-  * Arrow keys: ArrowUp, ArrowDown, ArrowLeft, ArrowRight
-  * Space bar for action
-- **Mobile/Frame ONLY**: Touch controls (tap screen or on-screen buttons)
-  * Use onTouchStart, onTouchMove, onTouchEnd events on the canvas
-  * Detect mobile with window.innerWidth or ontouchstart check
-- Implement BOTH control schemes - keyboard for desktop, touch for mobile
-- NO cross-platform controls (e.g., clicking on desktop should not trigger game actions)
+  * Use onTouchStart, onTouchMove, onTouchEnd for touch
+  * Use onMouseMove, onMouseDown for mouse
+  * Check 'ontouchstart' in window for touch capability detection
 
 CODE QUALITY:
 - Clean, readable code with comments

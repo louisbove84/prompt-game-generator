@@ -369,7 +369,7 @@ const ThisIsFineGame: React.FC = () => {
     };
   }, [gameState, gameWidth, gameHeight, level, score]);
 
-  // Keyboard controls
+  // Keyboard controls (works on both mobile and desktop)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (gameState === 'start' || gameState === 'gameOver') {
@@ -697,8 +697,8 @@ const ThisIsFineGame: React.FC = () => {
     ctx.arc(buttonX, buttonY, buttonRadius, 0, Math.PI * 2);
     ctx.stroke();
     
-    // Arrow key indicator (desktop)
-    if (!isMobile && canUseCalm) {
+    // Arrow key indicator (non-touch devices)
+    if (!('ontouchstart' in window) && canUseCalm) {
       ctx.fillStyle = '#000';
       ctx.font = 'bold 14px "Courier New"';
       ctx.textAlign = 'center';
@@ -707,10 +707,10 @@ const ThisIsFineGame: React.FC = () => {
     
     // Button text
     ctx.fillStyle = canUseCalm ? '#000' : '#666';
-    ctx.font = isMobile ? '10px "Courier New"' : '12px "Courier New"';
+    ctx.font = ('ontouchstart' in window) ? '10px "Courier New"' : '12px "Courier New"';
     ctx.textAlign = 'center';
-    ctx.fillText('THIS IS', buttonX, buttonY + (isMobile ? -2 : 2));
-    ctx.fillText('FINE', buttonX, buttonY + (isMobile ? 10 : 12));
+    ctx.fillText('THIS IS', buttonX, buttonY + (('ontouchstart' in window) ? -2 : 2));
+    ctx.fillText('FINE', buttonX, buttonY + (('ontouchstart' in window) ? 10 : 12));
     ctx.textAlign = 'start';
 
     // Defense selection UI (bottom)
@@ -741,8 +741,8 @@ const ThisIsFineGame: React.FC = () => {
       ctx.arc(x, y, radius, 0, Math.PI * 2);
       ctx.stroke();
       
-      // Arrow key indicator (desktop)
-      if (!isMobile) {
+      // Arrow key indicator (non-touch devices)
+      if (!('ontouchstart' in window)) {
         ctx.fillStyle = canAfford ? '#fff' : '#999';
         ctx.font = 'bold 16px "Courier New"';
         ctx.textAlign = 'center';
@@ -751,21 +751,21 @@ const ThisIsFineGame: React.FC = () => {
       
       // Defense name and cost
       ctx.fillStyle = canAfford ? '#fff' : '#999';
-      ctx.font = isMobile ? '12px "Courier New"' : '10px "Courier New"';
+      ctx.font = ('ontouchstart' in window) ? '12px "Courier New"' : '10px "Courier New"';
       ctx.textAlign = 'center';
       
       switch (type) {
         case 'extinguisher':
-          ctx.fillText('EXT', x, y + (isMobile ? -2 : 2));
-          ctx.fillText(`$${cost}`, x, y + (isMobile ? 12 : 15));
+          ctx.fillText('EXT', x, y + (('ontouchstart' in window) ? -2 : 2));
+          ctx.fillText(`$${cost}`, x, y + (('ontouchstart' in window) ? 12 : 15));
           break;
         case 'fan':
-          ctx.fillText('FAN', x, y + (isMobile ? -2 : 2));
-          ctx.fillText(`$${cost}`, x, y + (isMobile ? 12 : 15));
+          ctx.fillText('FAN', x, y + (('ontouchstart' in window) ? -2 : 2));
+          ctx.fillText(`$${cost}`, x, y + (('ontouchstart' in window) ? 12 : 15));
           break;
         case 'umbrella':
-          ctx.fillText('UMB', x, y + (isMobile ? -2 : 2));
-          ctx.fillText(`$${cost}`, x, y + (isMobile ? 12 : 15));
+          ctx.fillText('UMB', x, y + (('ontouchstart' in window) ? -2 : 2));
+          ctx.fillText(`$${cost}`, x, y + (('ontouchstart' in window) ? 12 : 15));
           break;
       }
     });
@@ -815,7 +815,7 @@ const ThisIsFineGame: React.FC = () => {
     }
   };
 
-  // Input handling
+  // Input handling (works on both mobile and desktop)
   const handleInput = useCallback((clientX: number, clientY: number) => {
     if (gameState === 'start' || gameState === 'gameOver') {
       startGame();
@@ -832,7 +832,7 @@ const ThisIsFineGame: React.FC = () => {
     // "This is fine" button
     const buttonX = gameWidth - 60;
     const buttonY = 30;
-    const buttonRadius = isMobile ? 30 : 25;
+    const buttonRadius = ('ontouchstart' in window) ? 30 : 25;
     if (Math.hypot(x - buttonX, y - buttonY) <= buttonRadius) {
       if (dogCalmCooldownRef.current <= 0) {
         // Calm all hazards temporarily
@@ -855,7 +855,7 @@ const ThisIsFineGame: React.FC = () => {
     for (let i = 0; i < defenseTypes.length; i++) {
       const buttonX = spacing * (i + 1);
       const buttonY = gameHeight - 40;
-      const touchRadius = isMobile ? 30 : 25; // Larger touch area for mobile
+      const touchRadius = ('ontouchstart' in window) ? 30 : 25; // Larger touch area for touch devices
       
       if (Math.hypot(x - buttonX, y - buttonY) <= touchRadius) {
         const type = defenseTypes[i];

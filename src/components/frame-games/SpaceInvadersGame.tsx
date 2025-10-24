@@ -106,9 +106,9 @@ const SpaceInvadersGame: React.FC = () => {
     setGameObjects(prev => ({ ...prev, enemies }));
   }, [gameWidth, gameHeight]);
 
-  // Auto-shooting for mobile
+  // Auto-shooting for touch devices (mobile or desktop with touch)
   useEffect(() => {
-    if (gameState !== 'playing' || !isMobile) return;
+    if (gameState !== 'playing' || !('ontouchstart' in window)) return;
 
     const autoShoot = setInterval(() => {
       setGameObjects(prev => ({
@@ -123,10 +123,10 @@ const SpaceInvadersGame: React.FC = () => {
           },
         ],
       }));
-    }, 300); // Auto-shoot every 300ms on mobile
+    }, 300); // Auto-shoot every 300ms on touch devices
 
     return () => clearInterval(autoShoot);
-  }, [gameState, isMobile]);
+  }, [gameState]);
 
   // Game loop
   useEffect(() => {
@@ -263,22 +263,19 @@ const SpaceInvadersGame: React.FC = () => {
               },
             };
           case ' ':
-            // Only allow manual shooting on desktop
-            if (!isMobile) {
-              return {
-                ...prev,
-                bullets: [
-                  ...prev.bullets,
-                  {
-                    x: prev.player.x + prev.player.width / 2 - 1,
-                    y: prev.player.y,
-                    width: 2,
-                    height: 8,
-                  },
-                ],
-              };
-            }
-            return prev;
+            // Manual shooting (works on both desktop and mobile with keyboard)
+            return {
+              ...prev,
+              bullets: [
+                ...prev.bullets,
+                {
+                  x: prev.player.x + prev.player.width / 2 - 1,
+                  y: prev.player.y,
+                  width: 2,
+                  height: 8,
+                },
+              ],
+            };
           default:
             return prev;
         }
@@ -289,7 +286,7 @@ const SpaceInvadersGame: React.FC = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [gameState, isMobile, gameWidth]);
 
-  // Mobile touch controls
+  // Touch controls (works on both mobile and desktop with touch)
   const handleTouchMove = (e: React.TouchEvent) => {
     if (gameState !== 'playing') return;
     
@@ -315,6 +312,44 @@ const SpaceInvadersGame: React.FC = () => {
     handleTouchMove(e);
   };
 
+  // Mouse controls for desktop (when not using touch)
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (gameState !== 'playing' || 'ontouchstart' in window) return;
+    
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const rect = canvas.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+
+    // Move player to mouse position (constrained to canvas width)
+    setGameObjects(prev => ({
+      ...prev,
+      player: {
+        ...prev.player,
+        x: Math.max(0, Math.min(gameWidth - prev.player.width, mouseX - prev.player.width / 2)),
+      },
+    }));
+  };
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (gameState !== 'playing' || 'ontouchstart' in window) return;
+    
+    // Manual shooting on mouse click
+    setGameObjects(prev => ({
+      ...prev,
+      bullets: [
+        ...prev.bullets,
+        {
+          x: prev.player.x + prev.player.width / 2 - 1,
+          y: prev.player.y,
+          width: 2,
+          height: 8,
+        },
+      ],
+    }));
+  };
+
   // Draw game
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -327,8 +362,8 @@ const SpaceInvadersGame: React.FC = () => {
     ctx.fillStyle = '#0a0a2e';
     ctx.fillRect(0, 0, gameWidth, gameHeight);
     
-    // Draw touch indicator below player (mobile only)
-    if (isMobile) {
+    // Draw control indicator below player (touch devices)
+    if ('ontouchstart' in window) {
       // Draw semi-transparent circle below ship
       const circleX = gameObjects.player.x + gameObjects.player.width / 2;
       const circleY = gameObjects.player.y + gameObjects.player.height + 30; // Reduced offset
@@ -480,8 +515,10 @@ const SpaceInvadersGame: React.FC = () => {
               touchAction: 'none', // Prevent scrolling on touch
               imageRendering: 'pixelated', // Keep crisp pixels for retro feel
             }}
-            onTouchStart={isMobile ? handleTouchStart : undefined}
-            onTouchMove={isMobile ? handleTouchMove : undefined}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onMouseMove={handleMouseMove}
+            onMouseDown={handleMouseDown}
           />
           
           {(gameState === 'gameOver' || gameState === 'won') && (
