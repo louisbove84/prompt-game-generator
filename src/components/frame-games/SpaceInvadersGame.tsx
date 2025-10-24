@@ -30,6 +30,7 @@ const SpaceInvadersGame: React.FC = () => {
   });
   const [gameWidth, setGameWidth] = useState(320);
   const [gameHeight, setGameHeight] = useState(320);
+  const [controlMode, setControlMode] = useState<'keyboard' | 'mouse'>('keyboard');
 
   // Initialize the game when component mounts
   useEffect(() => {
@@ -254,28 +255,32 @@ const SpaceInvadersGame: React.FC = () => {
         e.preventDefault();
       }
 
-      setGameObjects(prev => {
-        switch (e.key) {
-          case 'ArrowLeft':
-            return {
-              ...prev,
-              player: {
-                ...prev.player,
-                x: Math.max(0, prev.player.x - 10),
-              },
-            };
-          case 'ArrowRight':
-            return {
-              ...prev,
-              player: {
-                ...prev.player,
-                x: Math.min(gameWidth - prev.player.width, prev.player.x + 10),
-              },
-            };
-          case ' ':
-            // Manual shooting (works on both desktop and mobile with keyboard)
-            return {
-              ...prev,
+      // Only process movement keys if in keyboard mode
+      if (controlMode === 'keyboard' || e.key === ' ') {
+        setGameObjects(prev => {
+          switch (e.key) {
+            case 'ArrowLeft':
+              if (controlMode !== 'keyboard') return prev;
+              return {
+                ...prev,
+                player: {
+                  ...prev.player,
+                  x: Math.max(0, prev.player.x - 10),
+                },
+              };
+            case 'ArrowRight':
+              if (controlMode !== 'keyboard') return prev;
+              return {
+                ...prev,
+                player: {
+                  ...prev.player,
+                  x: Math.min(gameWidth - prev.player.width, prev.player.x + 10),
+                },
+              };
+            case ' ':
+              // Shooting works in both modes
+              return {
+                ...prev,
               bullets: [
                 ...prev.bullets,
                 {
@@ -288,13 +293,14 @@ const SpaceInvadersGame: React.FC = () => {
             };
           default:
             return prev;
-        }
-      });
+          }
+        });
+      }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [gameState, isMobile, gameWidth]);
+  }, [gameState, isMobile, gameWidth, controlMode]);
 
   // Touch controls (works on both mobile and desktop with touch)
   const handleTouchMove = (e: React.TouchEvent) => {
@@ -322,9 +328,9 @@ const SpaceInvadersGame: React.FC = () => {
     handleTouchMove(e);
   };
 
-  // Mouse controls for desktop (when not using touch)
+  // Mouse controls for desktop (when not using touch and in mouse mode)
   const handleMouseMove = (e: React.MouseEvent) => {
-    if (gameState !== 'playing' || 'ontouchstart' in window) return;
+    if (gameState !== 'playing' || 'ontouchstart' in window || controlMode !== 'mouse') return;
     
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -344,6 +350,7 @@ const SpaceInvadersGame: React.FC = () => {
 
   const handleMouseDown = (e: React.MouseEvent) => {
     if (gameState !== 'playing' || 'ontouchstart' in window) return;
+    // Mouse shooting works in both modes
     
     // Manual shooting on mouse click
     setGameObjects(prev => ({
@@ -512,13 +519,38 @@ const SpaceInvadersGame: React.FC = () => {
 
   return (
     <div className={`min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 ${isMobile ? 'p-0' : 'p-4'}`}>
-      {/* Game Title */}
+      {/* Game Title and Controls */}
       {!isMobile && (
         <div className="text-center mb-4">
           <h1 className="text-3xl font-bold text-white font-mono">SPACE INVADERS</h1>
           <p className="text-gray-300 text-sm mt-2">
-            Arrow Keys to move • Space OR Click to shoot
+            {controlMode === 'keyboard' ? 'Arrow Keys to move' : 'Move mouse to aim'} • Space OR Click to shoot
           </p>
+          
+          {/* Control Mode Toggle */}
+          <div className="mt-3 flex items-center justify-center gap-2">
+            <span className="text-gray-400 text-xs">Control Mode:</span>
+            <button
+              onClick={() => setControlMode(controlMode === 'keyboard' ? 'mouse' : 'keyboard')}
+              className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${
+                controlMode === 'keyboard' 
+                  ? 'bg-blue-600 text-white hover:bg-blue-700' 
+                  : 'bg-gray-600 text-gray-300 hover:bg-gray-700'
+              }`}
+            >
+              ⌨️ Keyboard
+            </button>
+            <button
+              onClick={() => setControlMode(controlMode === 'mouse' ? 'keyboard' : 'mouse')}
+              className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${
+                controlMode === 'mouse' 
+                  ? 'bg-purple-600 text-white hover:bg-purple-700' 
+                  : 'bg-gray-600 text-gray-300 hover:bg-gray-700'
+              }`}
+            >
+              🖱️ Mouse
+            </button>
+          </div>
         </div>
       )}
 
