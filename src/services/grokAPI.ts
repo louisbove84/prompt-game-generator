@@ -3,7 +3,7 @@
  * Service for generating games using Grok AI
  */
 
-import { GAME_TEMPLATE, GAME_GENERATION_SYSTEM_PROMPT } from '../templates/gameTemplate';
+import { UNIFIED_GAME_TEMPLATE, UNIFIED_SYSTEM_PROMPT } from '../templates/unifiedGameTemplate';
 
 const GROK_API_URL = 'https://api.x.ai/v1/chat/completions';
 const GROK_API_KEY = process.env.NEXT_PUBLIC_GROK_API_KEY;
@@ -51,7 +51,7 @@ export async function generateGame(
       const messages: any[] = [
         {
           role: 'system',
-          content: GAME_GENERATION_SYSTEM_PROMPT
+          content: UNIFIED_SYSTEM_PROMPT
         },
         {
           role: 'user',
@@ -61,7 +61,7 @@ export async function generateGame(
 
 Use this template as a guide:
 
-${GAME_TEMPLATE}
+${UNIFIED_GAME_TEMPLATE}
 
 Remember to:
 1. Return ONLY the complete .tsx file content
