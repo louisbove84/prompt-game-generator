@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
         },
         signal: controller.signal,
         body: JSON.stringify({
-        model: 'grok-beta', // Use grok-beta for faster responses
+        model: 'grok-2-latest', // Use latest grok-2 model
         stream: false,
         temperature,
         messages: [
