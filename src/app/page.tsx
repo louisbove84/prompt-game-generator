@@ -6,7 +6,7 @@ import { useAccount } from 'wagmi';
 import { WalletConnect, PaymentModal } from '../components/payments';
 import { DemoGames, DynamicGameLoader } from '../components/browser-games';
 import { mintGameNFT } from '../services/nft';
-import NFTSelector from '../components/NFTSelector';
+import { NFTSelector } from '../components/nft';
 import { NFTData } from '../services/nftLoader';
 
 export default function Home() {

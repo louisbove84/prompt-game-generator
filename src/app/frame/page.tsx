@@ -6,7 +6,7 @@ import { useAccount } from 'wagmi';
 import { SpaceInvadersGame, ThisIsFineGame, DynamicGameLoader } from '../../components/frame-games';
 import { WalletConnect, PaymentModal } from '../../components/payments';
 import { mintGameNFT } from '../../services/nft';
-import NFTSelector from '../../components/NFTSelector';
+import { NFTSelector } from '../../components/nft';
 import { NFTData } from '../../services/nftLoader';
 
 export default function FramePage() {
