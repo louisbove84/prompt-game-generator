@@ -28,6 +28,12 @@ const Game: React.FC = () => {
   const scoreRef = useRef(0);
   const keysPressed = useRef<Set<string>>(new Set());
   const mousePos = useRef({ x: 0, y: 0 });
+  const controlModeRef = useRef<'keyboard' | 'mouse'>('keyboard');
+
+  // Sync control mode state with ref for game loop
+  useEffect(() => {
+    controlModeRef.current = controlMode;
+  }, [controlMode]);
 
   // 1. Device detection and responsive sizing
   useEffect(() => {
@@ -152,10 +158,7 @@ const Game: React.FC = () => {
       };
       
       // Only move player with mouse if in mouse mode
-      if (controlMode === 'mouse') {
-        // EXAMPLE: Move player to mouse position
-        // gameObjectsRef.current.player.x = mousePos.current.x;
-      }
+      // The game loop should check controlModeRef.current === 'mouse' before using mousePos
     };
 
     const handleClick = (e: MouseEvent) => {
@@ -232,7 +235,17 @@ const Game: React.FC = () => {
       const objects = gameObjectsRef.current;
       
       // UPDATE: Game logic here (modify objects directly in ref)
-      // - Process keyboard input from keysPressed.current
+      // IMPORTANT: Check controlModeRef.current to determine which input to use
+      // 
+      // KEYBOARD MODE (controlModeRef.current === 'keyboard'):
+      //   - Process keyboard input from keysPressed.current
+      //   - if (keysPressed.current.has('arrowleft')) { objects.player.x -= speed; }
+      //   - if (keysPressed.current.has('arrowright')) { objects.player.x += speed; }
+      //
+      // MOUSE MODE (controlModeRef.current === 'mouse'):
+      //   - Use mousePos.current for player movement
+      //   - objects.player.x = mousePos.current.x - objects.player.width / 2;
+      //
       // - Move objects
       // - Check collisions
       // - Update score in scoreRef.current
@@ -252,12 +265,14 @@ const Game: React.FC = () => {
         ctx.textAlign = 'center';
         ctx.fillText('AUTO SHOOT ENABLED', gameWidth / 2, 20);
         
-        // Optional: Draw indicator above player if you have player object
-        // const circleX = objects.player.x + objects.player.width / 2;
-        // const circleY = objects.player.y - 50; // Above player
-        // ctx.fillStyle = 'rgba(74, 144, 226, 0.2)';
-        // ctx.beginPath();
-        // ctx.arc(circleX, circleY, 30, 0, 2 * Math.PI);
+        // IMPORTANT: Draw thumb placement indicator ABOVE player (not covered by thumb)
+        // Example with player object:
+        // if (objects.player) {
+        //   const circleX = objects.player.x + objects.player.width / 2;
+        //   const circleY = objects.player.y - 50; // Above player so thumb doesn't cover it
+        //   ctx.fillStyle = 'rgba(74, 144, 226, 0.2)';
+        //   ctx.beginPath();
+        //   ctx.arc(circleX, circleY, 30, 0, 2 * Math.PI);
         // ctx.fill();
         // ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
         // ctx.font = '20px monospace';
@@ -425,16 +440,17 @@ CRITICAL INSTRUCTIONS:
    ✅ All UI must be responsive and touch-friendly
 
 2. **ADAPTIVE CONTROLS** (CRITICAL - CONTROL MODE TOGGLE):
-   ✅ **Control Mode State**: Add controlMode state ('keyboard' | 'mouse')
+   ✅ **Control Mode State & Ref**: Add controlMode state AND controlModeRef
+   ✅ **Sync State to Ref**: Use useEffect to sync controlMode to controlModeRef.current
    ✅ **Toggle Buttons**: Two buttons to switch between keyboard and mouse mode
-   ✅ **Keyboard Mode**: Arrow keys/WASD move player, mouse movement disabled
-   ✅ **Mouse Mode**: Mouse moves player, arrow keys disabled for movement
+   ✅ **Game Loop Check**: In game loop, check controlModeRef.current to determine input
+   ✅ **Keyboard Mode**: Use keysPressed.current ONLY when controlModeRef.current === 'keyboard'
+   ✅ **Mouse Mode**: Use mousePos.current ONLY when controlModeRef.current === 'mouse'
    ✅ **Shooting**: Spacebar AND mouse clicks work in BOTH modes
    ✅ **Touch**: Tap and drag (mobile)
    ✅ **Auto-shooting**: Enabled on mobile devices (every 250ms)
    ✅ **ESC key**: Pause game (works in both modes)
    ✅ **No Conflicts**: Controls don't interfere with each other
-   ✅ User explicitly chooses their preferred input method
 
 3. **CANVAS RENDERING** (CRITICAL):
    ✅ ALL game graphics MUST render to <canvas>
@@ -443,12 +459,14 @@ CRITICAL INSTRUCTIONS:
    ✅ Game overlays (pause, game over) CAN be JSX
    ✅ Use 2D context only (ctx.fillStyle, ctx.strokeStyle, etc.)
 
-4. **MOBILE-FIRST FEATURES**:
+4. **MOBILE-FIRST FEATURES** (CRITICAL - THUMB PLACEMENT):
    ✅ Auto-shooting on mobile (no tap to shoot required)
-   ✅ Visual indicators for mobile controls
+   ✅ **Thumb Indicator ABOVE Player**: Draw 👆 indicator 50px ABOVE player (not below!)
+   ✅ **Prevent Thumb Coverage**: Player icon must be visible, not covered by thumb
+   ✅ **Visual Guide**: Use semi-transparent circle above player for thumb placement
    ✅ Touch-optimized UI elements
    ✅ Full-screen experience on mobile
-   ✅ Show "AUTO SHOOT" indicator on mobile
+   ✅ Show "AUTO SHOOT ENABLED" indicator at top of screen
 
 5. **GAME STATE MANAGEMENT**:
    ✅ Use refs for game objects (gameObjectsRef.current)
