@@ -192,22 +192,7 @@ const Game: React.FC = () => {
     };
   }, [gameState]);
 
-  // 7. Touch controls (mobile)
-  const handleTouchStart = (e: React.TouchEvent) => {
-    if (gameState !== 'playing') return;
-    e.preventDefault();
-    
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const touch = e.touches[0];
-    const rect = canvas.getBoundingClientRect();
-    const touchX = touch.clientX - rect.left;
-    const touchY = touch.clientY - rect.top;
-
-    // Handle touch input
-  };
-
+  // 7. Touch controls (mobile) - MUST IMPLEMENT FOR MOBILE PLAYABILITY
   const handleTouchMove = (e: React.TouchEvent) => {
     if (gameState !== 'playing') return;
     e.preventDefault();
@@ -220,7 +205,24 @@ const Game: React.FC = () => {
     const touchX = touch.clientX - rect.left;
     const touchY = touch.clientY - rect.top;
 
-    // Handle touch movement
+    // CRITICAL: Move player to touch position
+    // This is REQUIRED for mobile games to be playable
+    const objects = gameObjectsRef.current;
+    if (objects.player) {
+      // Center player on touch X position
+      objects.player.x = Math.max(
+        0, 
+        Math.min(gameWidth - objects.player.width, touchX - objects.player.width / 2)
+      );
+      
+      // Optional: Also update Y position for 2D movement games
+      // objects.player.y = Math.max(0, Math.min(gameHeight - objects.player.height, touchY - objects.player.height / 2));
+    }
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    // Call handleTouchMove to immediately move player to touch position
+    handleTouchMove(e);
   };
 
   // 8. Game loop (60 FPS)
@@ -259,24 +261,37 @@ const Game: React.FC = () => {
       
       // Draw mobile control indicators
       if (isMobile && 'ontouchstart' in window) {
-        // Draw touch indicator at top of screen (not covered by thumb)
+        // Draw AUTO SHOOT indicator at top of screen
         ctx.fillStyle = 'rgba(34, 197, 94, 0.9)';
         ctx.font = '12px monospace';
         ctx.textAlign = 'center';
         ctx.fillText('AUTO SHOOT ENABLED', gameWidth / 2, 20);
         
-        // IMPORTANT: Draw thumb placement indicator ABOVE player (not covered by thumb)
-        // Example with player object:
-        // if (objects.player) {
-        //   const circleX = objects.player.x + objects.player.width / 2;
-        //   const circleY = objects.player.y - 50; // Above player so thumb doesn't cover it
-        //   ctx.fillStyle = 'rgba(74, 144, 226, 0.2)';
-        //   ctx.beginPath();
-        //   ctx.arc(circleX, circleY, 30, 0, 2 * Math.PI);
-        // ctx.fill();
-        // ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
-        // ctx.font = '20px monospace';
-        // ctx.fillText('👆', circleX, circleY + 6);
+        // CRITICAL: Draw thumb placement indicator ABOVE player (not covered by thumb)
+        // This MUST be implemented for mobile UX
+        if (objects.player) {
+          const circleX = objects.player.x + objects.player.width / 2;
+          const circleY = objects.player.y - 50; // NEGATIVE offset: above player!
+          
+          // Draw semi-transparent circle behind where thumb should be
+          ctx.fillStyle = 'rgba(74, 144, 226, 0.2)';
+          ctx.beginPath();
+          ctx.arc(circleX, circleY, 30, 0, 2 * Math.PI);
+          ctx.fill();
+          
+          // Draw dashed circle border
+          ctx.strokeStyle = 'rgba(74, 144, 226, 0.4)';
+          ctx.setLineDash([5, 5]);
+          ctx.lineWidth = 2;
+          ctx.stroke();
+          ctx.setLineDash([]); // Reset line dash
+          
+          // Draw hand emoji in center of circle
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+          ctx.font = '20px monospace';
+          ctx.textAlign = 'center';
+          ctx.fillText('👆', circleX, circleY + 6);
+        }
       }
       
       // Draw score
@@ -459,11 +474,13 @@ CRITICAL INSTRUCTIONS:
    ✅ Game overlays (pause, game over) CAN be JSX
    ✅ Use 2D context only (ctx.fillStyle, ctx.strokeStyle, etc.)
 
-4. **MOBILE-FIRST FEATURES** (CRITICAL - THUMB PLACEMENT):
+4. **MOBILE-FIRST FEATURES** (CRITICAL - WORKING CODE PROVIDED):
+   ✅ **Touch Controls**: MUST implement handleTouchMove to update player position
+   ✅ **Working Code Provided**: Use the touch handler code exactly as shown
    ✅ Auto-shooting on mobile (no tap to shoot required)
-   ✅ **Thumb Indicator ABOVE Player**: Draw 👆 indicator 50px ABOVE player (not below!)
-   ✅ **Prevent Thumb Coverage**: Player icon must be visible, not covered by thumb
-   ✅ **Visual Guide**: Use semi-transparent circle above player for thumb placement
+   ✅ **Thumb Indicator ABOVE Player**: circleY = player.y - 50 (NEGATIVE offset!)
+   ✅ **Working Indicator Code**: Complete thumb indicator implementation provided
+   ✅ **Prevent Thumb Coverage**: Circle must be drawn ABOVE so thumb doesn't cover player
    ✅ Touch-optimized UI elements
    ✅ Full-screen experience on mobile
    ✅ Show "AUTO SHOOT ENABLED" indicator at top of screen
