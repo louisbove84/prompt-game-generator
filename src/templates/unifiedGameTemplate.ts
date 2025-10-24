@@ -86,7 +86,8 @@ const Game: React.FC = () => {
   useEffect(() => {
     // Initialize your game objects here
     gameObjectsRef.current = {
-      // Example: player: { x: gameWidth / 2, y: gameHeight - 50, width: 20, height: 20 }
+      // Example: player at 20% from bottom (80% from top)
+      // player: { x: gameWidth / 2, y: gameHeight * 0.8, width: 20, height: 20 }
     };
   }, [gameWidth, gameHeight]);
 
@@ -491,6 +492,8 @@ CRITICAL INSTRUCTIONS:
 
 5. **GAME STATE MANAGEMENT**:
    ✅ Use refs for game objects (gameObjectsRef.current)
+   ✅ **Player Position**: Start player at y = gameHeight * 0.8 (20% from bottom)
+   ✅ This keeps player icon visible above thumb indicator on mobile
    ✅ NO setState in game loop (causes lag)
    ✅ Update score periodically from ref to state
    ✅ Game states: 'playing', 'paused', 'gameOver', 'won'
