@@ -18,6 +18,7 @@ const Game: React.FC = () => {
   const [gameWidth, setGameWidth] = useState(800);
   const [gameHeight, setGameHeight] = useState(600);
   const [isMobile, setIsMobile] = useState(false);
+  const [controlMode, setControlMode] = useState<'keyboard' | 'mouse'>('keyboard');
   
   // Refs for game state (no setState in game loop!)
   const gameObjectsRef = useRef<any>({
@@ -104,7 +105,7 @@ const Game: React.FC = () => {
     return () => clearInterval(autoShoot);
   }, [gameState, isMobile]);
 
-  // 5. Keyboard controls (works everywhere)
+  // 5. Keyboard controls (respects control mode for movement)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (gameState !== 'playing') return;
@@ -114,7 +115,10 @@ const Game: React.FC = () => {
         e.preventDefault();
       }
 
-      keysPressed.current.add(e.key.toLowerCase());
+      // Only add movement keys if in keyboard mode (spacebar always works)
+      if (controlMode === 'keyboard' || e.key === ' ' || e.key === 'Escape') {
+        keysPressed.current.add(e.key.toLowerCase());
+      }
       
       // Pause on ESC
       if (e.key === 'Escape') {
@@ -133,9 +137,9 @@ const Game: React.FC = () => {
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
     };
-  }, [gameState]);
+  }, [gameState, controlMode]);
 
-  // 6. Mouse controls (desktop)
+  // 6. Mouse controls (desktop, respects control mode for movement)
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       const canvas = canvasRef.current;
@@ -146,6 +150,12 @@ const Game: React.FC = () => {
         x: e.clientX - rect.left,
         y: e.clientY - rect.top
       };
+      
+      // Only move player with mouse if in mouse mode
+      if (controlMode === 'mouse') {
+        // EXAMPLE: Move player to mouse position
+        // gameObjectsRef.current.player.x = mousePos.current.x;
+      }
     };
 
     const handleClick = (e: MouseEvent) => {
@@ -297,7 +307,34 @@ const Game: React.FC = () => {
       {!isMobile && (
         <div className="text-white text-center mb-4">
           <h1 className="text-3xl font-bold mb-2">Your Generated Game</h1>
-          <p className="text-gray-300">Arrow Keys / WASD to move • Space OR Click to shoot • ESC to pause</p>
+          <p className="text-gray-300">
+            {controlMode === 'keyboard' ? 'Arrow Keys / WASD to move' : 'Move mouse to aim'} • Space OR Click to shoot • ESC to pause
+          </p>
+          
+          {/* Control Mode Toggle */}
+          <div className="mt-3 flex items-center justify-center gap-2">
+            <span className="text-gray-400 text-xs">Control Mode:</span>
+            <button
+              onClick={() => setControlMode('keyboard')}
+              className={\`px-4 py-2 rounded-lg text-sm font-bold transition-all \${
+                controlMode === 'keyboard' 
+                  ? 'bg-blue-600 text-white hover:bg-blue-700' 
+                  : 'bg-gray-600 text-gray-300 hover:bg-gray-700'
+              }\`}
+            >
+              ⌨️ Keyboard
+            </button>
+            <button
+              onClick={() => setControlMode('mouse')}
+              className={\`px-4 py-2 rounded-lg text-sm font-bold transition-all \${
+                controlMode === 'mouse' 
+                  ? 'bg-purple-600 text-white hover:bg-purple-700' 
+                  : 'bg-gray-600 text-gray-300 hover:bg-gray-700'
+              }\`}
+            >
+              🖱️ Mouse
+            </button>
+          </div>
         </div>
       )}
 
@@ -387,15 +424,17 @@ CRITICAL INSTRUCTIONS:
    ✅ Detect mobile: screen width, touch capability, user agent
    ✅ All UI must be responsive and touch-friendly
 
-2. **ADAPTIVE CONTROLS** (CRITICAL - DUAL INPUT SUPPORT):
-   ✅ **Keyboard**: WASD + Arrow Keys for movement, Space for shoot/jump (works everywhere)
-   ✅ **Mouse**: Movement tracking + Click for shoot/jump (desktop - same actions as spacebar)
-   ✅ **Dual Desktop Controls**: User can play with ONLY keyboard OR ONLY mouse OR both
+2. **ADAPTIVE CONTROLS** (CRITICAL - CONTROL MODE TOGGLE):
+   ✅ **Control Mode State**: Add controlMode state ('keyboard' | 'mouse')
+   ✅ **Toggle Buttons**: Two buttons to switch between keyboard and mouse mode
+   ✅ **Keyboard Mode**: Arrow keys/WASD move player, mouse movement disabled
+   ✅ **Mouse Mode**: Mouse moves player, arrow keys disabled for movement
+   ✅ **Shooting**: Spacebar AND mouse clicks work in BOTH modes
    ✅ **Touch**: Tap and drag (mobile)
    ✅ **Auto-shooting**: Enabled on mobile devices (every 250ms)
-   ✅ **ESC key**: Pause game
-   ✅ **Mouse clicks = Spacebar**: Clicking should trigger same actions as spacebar
-   ✅ All control methods work independently and seamlessly
+   ✅ **ESC key**: Pause game (works in both modes)
+   ✅ **No Conflicts**: Controls don't interfere with each other
+   ✅ User explicitly chooses their preferred input method
 
 3. **CANVAS RENDERING** (CRITICAL):
    ✅ ALL game graphics MUST render to <canvas>
