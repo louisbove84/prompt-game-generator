@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
         },
         signal: controller.signal,
         body: JSON.stringify({
-        model: 'grok-2-latest', // Use latest grok-2 model
+        model: 'grok-3-mini', // Fast, affordable, 131k context
         stream: false,
         temperature,
         messages: [
