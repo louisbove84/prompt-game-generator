@@ -256,49 +256,50 @@ const Game: React.FC = () => {
       ctx.fillStyle = '#000000';
       ctx.fillRect(0, 0, gameWidth, gameHeight);
       
-      // Draw your game objects using ctx methods
-      // Example: ctx.fillRect(objects.player.x, objects.player.y, 20, 20);
-      
-      // Draw mobile control indicators
-      if (isMobile && 'ontouchstart' in window) {
-        // Draw AUTO SHOOT indicator at top of screen
-        ctx.fillStyle = 'rgba(34, 197, 94, 0.9)';
-        ctx.font = '12px monospace';
-        ctx.textAlign = 'center';
-        ctx.fillText('AUTO SHOOT ENABLED', gameWidth / 2, 20);
+      // CRITICAL: Draw thumb indicator FIRST (before player) so it appears BEHIND
+      if (isMobile && 'ontouchstart' in window && objects.player) {
+        const circleX = objects.player.x + objects.player.width / 2;
+        const circleY = objects.player.y - 50; // NEGATIVE offset: above player!
         
-        // CRITICAL: Draw thumb placement indicator ABOVE player (not covered by thumb)
-        // This MUST be implemented for mobile UX
-        if (objects.player) {
-          const circleX = objects.player.x + objects.player.width / 2;
-          const circleY = objects.player.y - 50; // NEGATIVE offset: above player!
-          
-          // Draw semi-transparent circle behind where thumb should be
-          ctx.fillStyle = 'rgba(74, 144, 226, 0.2)';
-          ctx.beginPath();
-          ctx.arc(circleX, circleY, 30, 0, 2 * Math.PI);
-          ctx.fill();
-          
-          // Draw dashed circle border
-          ctx.strokeStyle = 'rgba(74, 144, 226, 0.4)';
-          ctx.setLineDash([5, 5]);
-          ctx.lineWidth = 2;
-          ctx.stroke();
-          ctx.setLineDash([]); // Reset line dash
-          
-          // Draw hand emoji in center of circle
-          ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
-          ctx.font = '20px monospace';
-          ctx.textAlign = 'center';
-          ctx.fillText('👆', circleX, circleY + 6);
-        }
+        // Draw semi-transparent circle behind where thumb should be
+        ctx.fillStyle = 'rgba(74, 144, 226, 0.2)';
+        ctx.beginPath();
+        ctx.arc(circleX, circleY, 30, 0, 2 * Math.PI);
+        ctx.fill();
+        
+        // Draw dashed circle border
+        ctx.strokeStyle = 'rgba(74, 144, 226, 0.4)';
+        ctx.setLineDash([5, 5]);
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        ctx.setLineDash([]); // Reset line dash
+        
+        // Draw hand emoji in center of circle
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+        ctx.font = '20px monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText('👆', circleX, circleY + 6);
       }
       
+      // Draw your game objects using ctx methods
+      // IMPORTANT: Player and game objects are drawn AFTER thumb indicator
+      // This ensures player appears IN FRONT of the thumb circle
+      // Example: ctx.fillRect(objects.player.x, objects.player.y, 20, 20);
+      
+      // Draw UI overlays (always on top)
       // Draw score
       ctx.fillStyle = '#ffffff';
       ctx.font = isMobile ? '16px monospace' : '20px monospace';
       ctx.textAlign = 'left';
       ctx.fillText(\`Score: \${scoreRef.current}\`, 10, 30);
+      
+      // Draw AUTO SHOOT indicator on mobile (always on top)
+      if (isMobile && 'ontouchstart' in window) {
+        ctx.fillStyle = 'rgba(34, 197, 94, 0.9)';
+        ctx.font = '12px monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText('AUTO SHOOT ENABLED', gameWidth / 2, 20);
+      }
       
       // Sync score with React state periodically
       if (scoreRef.current !== score) {
@@ -479,6 +480,8 @@ CRITICAL INSTRUCTIONS:
    ✅ **Working Code Provided**: Use the touch handler code exactly as shown
    ✅ Auto-shooting on mobile (no tap to shoot required)
    ✅ **Thumb Indicator ABOVE Player**: circleY = player.y - 50 (NEGATIVE offset!)
+   ✅ **DRAWING ORDER**: Thumb indicator BEFORE player, so player appears in front
+   ✅ **Z-Index Control**: Clear → Thumb circle → Player → UI text
    ✅ **Working Indicator Code**: Complete thumb indicator implementation provided
    ✅ **Prevent Thumb Coverage**: Circle must be drawn ABOVE so thumb doesn't cover player
    ✅ Touch-optimized UI elements
