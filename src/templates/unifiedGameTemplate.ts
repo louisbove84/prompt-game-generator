@@ -256,12 +256,18 @@ const Game: React.FC = () => {
       ctx.fillStyle = '#000000';
       ctx.fillRect(0, 0, gameWidth, gameHeight);
       
-      // CRITICAL: Draw thumb indicator FIRST (before player) so it appears BEHIND
+      // Draw your game objects using ctx methods
+      // IMPORTANT: Draw player and game objects FIRST
+      // Example: ctx.fillRect(objects.player.x, objects.player.y, 20, 20);
+      
+      // CRITICAL: Draw thumb indicator SECOND (after player) so it appears BEHIND/BELOW
+      // Position: Below player on screen for thumb placement guide
+      // Z-Index: Drawn after player but semi-transparent so player is still visible
       if (isMobile && 'ontouchstart' in window && objects.player) {
         const circleX = objects.player.x + objects.player.width / 2;
-        const circleY = objects.player.y - 50; // NEGATIVE offset: above player!
+        const circleY = objects.player.y + objects.player.height + 50; // Below player (positive offset)
         
-        // Draw semi-transparent circle behind where thumb should be
+        // Draw semi-transparent circle where thumb should be placed
         ctx.fillStyle = 'rgba(74, 144, 226, 0.2)';
         ctx.beginPath();
         ctx.arc(circleX, circleY, 30, 0, 2 * Math.PI);
@@ -280,11 +286,6 @@ const Game: React.FC = () => {
         ctx.textAlign = 'center';
         ctx.fillText('👆', circleX, circleY + 6);
       }
-      
-      // Draw your game objects using ctx methods
-      // IMPORTANT: Player and game objects are drawn AFTER thumb indicator
-      // This ensures player appears IN FRONT of the thumb circle
-      // Example: ctx.fillRect(objects.player.x, objects.player.y, 20, 20);
       
       // Draw UI overlays (always on top)
       // Draw score
@@ -479,11 +480,11 @@ CRITICAL INSTRUCTIONS:
    ✅ **Touch Controls**: MUST implement handleTouchMove to update player position
    ✅ **Working Code Provided**: Use the touch handler code exactly as shown
    ✅ Auto-shooting on mobile (no tap to shoot required)
-   ✅ **Thumb Indicator ABOVE Player**: circleY = player.y - 50 (NEGATIVE offset!)
-   ✅ **DRAWING ORDER**: Thumb indicator BEFORE player, so player appears in front
-   ✅ **Z-Index Control**: Clear → Thumb circle → Player → UI text
+   ✅ **Thumb Indicator BELOW Player**: circleY = player.y + player.height + 50 (below on screen)
+   ✅ **DRAWING ORDER**: Player FIRST, then thumb indicator (semi-transparent)
+   ✅ **Z-Index Control**: Clear → Player → Thumb circle (transparent) → UI text
    ✅ **Working Indicator Code**: Complete thumb indicator implementation provided
-   ✅ **Prevent Thumb Coverage**: Circle must be drawn ABOVE so thumb doesn't cover player
+   ✅ **Visual Guide**: Circle shows where to place thumb, below player on screen
    ✅ Touch-optimized UI elements
    ✅ Full-screen experience on mobile
    ✅ Show "AUTO SHOOT ENABLED" indicator at top of screen
