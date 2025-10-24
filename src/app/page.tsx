@@ -90,6 +90,12 @@ export default function Home() {
         }),
       });
       
+      // Check if response is JSON before parsing
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        throw new Error('Game generation timed out. Please try a simpler prompt or try again.');
+      }
+      
       const result = await response.json();
       
       const duration = ((Date.now() - startTime) / 1000).toFixed(2);

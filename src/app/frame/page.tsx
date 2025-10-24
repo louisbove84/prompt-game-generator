@@ -86,6 +86,12 @@ export default function FramePage() {
         }),
       });
       
+      // Check if response is JSON before parsing
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        throw new Error('Game generation timed out. Please try a simpler prompt or try again.');
+      }
+      
       const result = await response.json();
       
       if (result.success && result.gameCode) {
