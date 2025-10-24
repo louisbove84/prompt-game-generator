@@ -4,8 +4,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { GAME_TEMPLATE, GAME_GENERATION_SYSTEM_PROMPT } from '@/templates/frameGameTemplate';
-import { BROWSER_GAME_TEMPLATE, BROWSER_GAME_SYSTEM_PROMPT } from '@/templates/browserGameTemplate';
+import { UNIFIED_GAME_TEMPLATE, UNIFIED_SYSTEM_PROMPT } from '@/templates/unifiedGameTemplate';
 
 const GROK_API_URL = 'https://api.x.ai/v1/chat/completions';
 
@@ -13,14 +12,13 @@ export async function POST(request: NextRequest) {
   console.log('🎮 [API Route] Game generation request received');
   
   try {
-    const { userPrompt, temperature = 0.7, gameType = 'browser' } = await request.json();
+    const { userPrompt, temperature = 0.7 } = await request.json();
     
-    // Select template based on game type
-    const isBrowserGame = gameType === 'browser';
-    const template = isBrowserGame ? BROWSER_GAME_TEMPLATE : GAME_TEMPLATE;
-    const systemPrompt = isBrowserGame ? BROWSER_GAME_SYSTEM_PROMPT : GAME_GENERATION_SYSTEM_PROMPT;
+    // Use unified template for all games
+    const template = UNIFIED_GAME_TEMPLATE;
+    const systemPrompt = UNIFIED_SYSTEM_PROMPT;
     
-    console.log(`🎯 [API Route] Generating ${isBrowserGame ? 'BROWSER' : 'FRAME'} game`);
+    console.log('🎯 [API Route] Generating UNIFIED responsive game');
     
     if (!userPrompt) {
       return NextResponse.json(
@@ -60,7 +58,7 @@ export async function POST(request: NextRequest) {
           },
           {
             role: 'user',
-            content: `Create a ${isBrowserGame ? 'sophisticated full-screen browser' : 'lightweight mobile-friendly'} game based on this description:
+            content: `Create a unified responsive game that works on both mobile and desktop based on this description:
 
 "${userPrompt}"
 

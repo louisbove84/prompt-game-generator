@@ -24,12 +24,31 @@ npm run dev
 ## 🎯 Features
 
 - **AI Game Generation**: Create games from text prompts using Grok AI
-- **Dual Platform Support**: 
-  - Browser games (full-screen, advanced graphics)
-  - Frame games (mobile-optimized for Farcaster)
+- **Unified Responsive Design**: 
+  - Single codebase works on both mobile and desktop
+  - Full-screen on mobile, windowed on desktop
+  - Adaptive controls (touch, keyboard, mouse)
+  - Auto-shooting on mobile devices
 - **NFT Minting**: Automatic NFT creation on Base network
 - **Payment Integration**: USDC payments via Coinbase Wallet
 - **IPFS Storage**: Decentralized image and metadata storage
+- **Navigation Warning**: Prevents NFT loss during minting
+
+## 🏗️ Architecture
+
+### Unified Game System
+- **Single Template**: One responsive game template for all devices
+- **Adaptive Controls**: Automatically detects device and adjusts controls
+- **Responsive Layout**: Full-screen on mobile, windowed on desktop
+- **Smart Features**: Auto-shooting on mobile, keyboard/mouse on desktop
+
+### Technology Stack
+- **Frontend**: Next.js 15.4.4 with App Router
+- **Styling**: Tailwind CSS
+- **AI**: Grok API for game generation
+- **Blockchain**: Base network (Ethereum L2)
+- **Storage**: IPFS via Pinata
+- **Wallet**: Wagmi + Viem
 
 ## 🛠️ Setup Guide
 
