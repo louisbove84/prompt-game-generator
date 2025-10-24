@@ -151,7 +151,7 @@ const Game: React.FC = () => {
     const handleClick = (e: MouseEvent) => {
       if (gameState !== 'playing') return;
       
-      // Handle click actions
+      // Mouse click should trigger same actions as spacebar (shooting, jumping, etc.)
       const canvas = canvasRef.current;
       if (!canvas) return;
       
@@ -159,7 +159,15 @@ const Game: React.FC = () => {
       const clickX = e.clientX - rect.left;
       const clickY = e.clientY - rect.top;
       
-      // Add click logic here
+      // EXAMPLE: Shoot on click (same as spacebar)
+      // gameObjectsRef.current.bullets.push({
+      //   x: gameObjectsRef.current.player.x + gameObjectsRef.current.player.width / 2,
+      //   y: gameObjectsRef.current.player.y,
+      //   width: 2,
+      //   height: 10
+      // });
+      
+      // Or place object at click position, trigger action, etc.
     };
 
     window.addEventListener('mousemove', handleMouseMove);
@@ -289,7 +297,7 @@ const Game: React.FC = () => {
       {!isMobile && (
         <div className="text-white text-center mb-4">
           <h1 className="text-3xl font-bold mb-2">Your Generated Game</h1>
-          <p className="text-gray-300">Arrow Keys / WASD to move • Space to shoot • ESC to pause</p>
+          <p className="text-gray-300">Arrow Keys / WASD to move • Space OR Click to shoot • ESC to pause</p>
         </div>
       )}
 
@@ -379,13 +387,15 @@ CRITICAL INSTRUCTIONS:
    ✅ Detect mobile: screen width, touch capability, user agent
    ✅ All UI must be responsive and touch-friendly
 
-2. **ADAPTIVE CONTROLS**:
-   ✅ Keyboard: WASD + Arrow Keys + Space (works everywhere)
-   ✅ Mouse: Movement tracking + Click (desktop)
-   ✅ Touch: Tap and drag (mobile)
-   ✅ Auto-shooting: Enabled on mobile devices (every 250ms)
-   ✅ ESC key: Pause game
-   ✅ All control methods work together seamlessly
+2. **ADAPTIVE CONTROLS** (CRITICAL - DUAL INPUT SUPPORT):
+   ✅ **Keyboard**: WASD + Arrow Keys for movement, Space for shoot/jump (works everywhere)
+   ✅ **Mouse**: Movement tracking + Click for shoot/jump (desktop - same actions as spacebar)
+   ✅ **Dual Desktop Controls**: User can play with ONLY keyboard OR ONLY mouse OR both
+   ✅ **Touch**: Tap and drag (mobile)
+   ✅ **Auto-shooting**: Enabled on mobile devices (every 250ms)
+   ✅ **ESC key**: Pause game
+   ✅ **Mouse clicks = Spacebar**: Clicking should trigger same actions as spacebar
+   ✅ All control methods work independently and seamlessly
 
 3. **CANVAS RENDERING** (CRITICAL):
    ✅ ALL game graphics MUST render to <canvas>

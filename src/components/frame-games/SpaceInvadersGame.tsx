@@ -516,6 +516,9 @@ const SpaceInvadersGame: React.FC = () => {
       {!isMobile && (
         <div className="text-center mb-4">
           <h1 className="text-3xl font-bold text-white font-mono">SPACE INVADERS</h1>
+          <p className="text-gray-300 text-sm mt-2">
+            Arrow Keys to move • Space OR Click to shoot
+          </p>
         </div>
       )}
 
