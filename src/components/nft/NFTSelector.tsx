@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useAccount } from 'wagmi';
-import { loadNFTsFromWallet, NFTData } from '../services/nftLoader';
+import { loadNFTsFromWallet, NFTData } from '../../services/nftLoader';
 
 interface NFTSelectorProps {
   isOpen: boolean;
