@@ -106,10 +106,20 @@ const SpaceInvadersGame: React.FC = () => {
     setGameObjects(prev => ({ ...prev, enemies }));
   }, [gameWidth, gameHeight]);
 
-  // Auto-shooting for touch devices (mobile or desktop with touch)
+  // Auto-shooting for mobile devices
   useEffect(() => {
-    if (gameState !== 'playing' || !('ontouchstart' in window)) return;
+    if (gameState !== 'playing') return;
 
+    // More reliable mobile detection
+    const isMobileDevice = isMobile || 
+      window.innerWidth <= 768 || 
+      'ontouchstart' in window || 
+      /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+    if (!isMobileDevice) return;
+
+    console.log('🎮 [Space Invaders] Auto-shooting enabled for mobile device');
+    
     const autoShoot = setInterval(() => {
       setGameObjects(prev => ({
         ...prev,
@@ -123,10 +133,10 @@ const SpaceInvadersGame: React.FC = () => {
           },
         ],
       }));
-    }, 300); // Auto-shoot every 300ms on touch devices
+    }, 250); // Auto-shoot every 250ms on mobile devices (slightly faster)
 
     return () => clearInterval(autoShoot);
-  }, [gameState]);
+  }, [gameState, isMobile]);
 
   // Game loop
   useEffect(() => {
@@ -385,6 +395,12 @@ const SpaceInvadersGame: React.FC = () => {
       ctx.font = '20px monospace';
       ctx.textAlign = 'center';
       ctx.fillText('👆', circleX, circleY + 6);
+      
+      // Draw auto-shoot indicator
+      ctx.fillStyle = 'rgba(34, 197, 94, 0.9)'; // Green color
+      ctx.font = '12px monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText('AUTO SHOOT', circleX, circleY + 25);
     }
     
     // Draw player (simple ship shape)

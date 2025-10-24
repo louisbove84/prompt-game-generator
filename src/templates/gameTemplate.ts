@@ -122,7 +122,29 @@ const GeneratedGame: React.FC = () => {
     return () => clearInterval(gameLoop);
   }, [gameState, gameWidth, gameHeight]);
 
-  // 4. Keyboard controls (works on both mobile and desktop)
+  // 4. Auto-shooting for mobile devices
+  useEffect(() => {
+    if (gameState !== 'playing') return;
+
+    // More reliable mobile detection
+    const isMobileDevice = isMobile || 
+      window.innerWidth <= 768 || 
+      'ontouchstart' in window || 
+      /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+    if (!isMobileDevice) return;
+
+    console.log('🎮 [Legacy Game] Auto-shooting enabled for mobile device');
+    
+    const autoShoot = setInterval(() => {
+      // Auto-shoot logic here - add bullets to game objects
+      // Example: Add bullet to bullets array in gameObjectsRef.current
+    }, 250); // Auto-shoot every 250ms on mobile devices
+
+    return () => clearInterval(autoShoot);
+  }, [gameState, isMobile]);
+
+  // 5. Keyboard controls (works on both mobile and desktop)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (gameState !== 'playing') return;

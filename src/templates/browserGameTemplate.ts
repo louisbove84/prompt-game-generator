@@ -121,7 +121,28 @@ const BrowserGame: React.FC = () => {
     };
   }, []);
 
-  // 4. Mouse controls (works on both mobile and desktop)
+  // 4. Auto-shooting for mobile devices
+  useEffect(() => {
+    if (gameState !== 'playing') return;
+
+    // More reliable mobile detection
+    const isMobileDevice = window.innerWidth <= 768 || 
+      'ontouchstart' in window || 
+      /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+    if (!isMobileDevice) return;
+
+    console.log('🎮 [Browser Game] Auto-shooting enabled for mobile device');
+    
+    const autoShoot = setInterval(() => {
+      // Auto-shoot logic here - add bullets/projectiles to game objects
+      // Example: Add bullet to bullets array in gameObjectsRef.current
+    }, 250); // Auto-shoot every 250ms on mobile devices
+
+    return () => clearInterval(autoShoot);
+  }, [gameState]);
+
+  // 5. Mouse controls (works on both mobile and desktop)
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       const canvas = canvasRef.current;
@@ -386,6 +407,7 @@ CRITICAL REQUIREMENTS - BROWSER GAMES:
    ✅ Touch: Tap and drag for mobile/touch devices
    ✅ ESC key for pause
    ✅ All control methods work together seamlessly
+   ✅ **Mobile Auto-Shooting**: Automatic shooting on mobile devices
    
 3. **Advanced Features** (Use these!):
    ✅ Gradients and shadows for visual effects

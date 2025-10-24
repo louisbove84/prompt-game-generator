@@ -122,7 +122,29 @@ const GeneratedGame: React.FC = () => {
     return () => clearInterval(gameLoop);
   }, [gameState, gameWidth, gameHeight]);
 
-  // 4. Keyboard controls (works on both mobile and desktop)
+  // 4. Auto-shooting for mobile devices
+  useEffect(() => {
+    if (gameState !== 'playing') return;
+
+    // More reliable mobile detection
+    const isMobileDevice = isMobile || 
+      window.innerWidth <= 768 || 
+      'ontouchstart' in window || 
+      /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+    if (!isMobileDevice) return;
+
+    console.log('🎮 [Game Template] Auto-shooting enabled for mobile device');
+    
+    const autoShoot = setInterval(() => {
+      // Auto-shoot logic here - add bullets to game objects
+      // Example: Add bullet to bullets array in gameObjectsRef.current
+    }, 250); // Auto-shoot every 250ms on mobile devices
+
+    return () => clearInterval(autoShoot);
+  }, [gameState, isMobile]);
+
+  // 5. Keyboard controls (works on both mobile and desktop)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (gameState !== 'playing') return;
@@ -296,6 +318,8 @@ CRITICAL REQUIREMENTS - READ CAREFULLY:
    - Mouse controls work on desktop when not using touch
    - Use 'ontouchstart' in window to detect touch capability
    - All control methods should work together seamlessly
+   - **MOBILE AUTO-SHOOTING**: Enable automatic shooting on mobile devices
+   - Mobile users should only need to move, not tap to shoot
 7. Be responsive: desktop ~320-420px, mobile full-screen
 8. Include game states: 'playing', 'gameOver', 'won'
 9. Include score tracking
@@ -329,6 +353,11 @@ CONTROLS:
   * Mouse: Mouse movement and clicks on desktop (when not using touch)
   * Use 'ontouchstart' in window to detect touch capability
   * All control methods should work together seamlessly
+- **Mobile Auto-Shooting**: 
+  * Enable automatic shooting on mobile devices (every 250ms)
+  * Mobile users only need to move, not tap to shoot
+  * Show "AUTO SHOOT" indicator on mobile devices
+  * Use reliable mobile detection: screen width, touch capability, user agent
 - **Implementation**:
   * Use window.addEventListener for keyboard controls
   * Use onTouchStart, onTouchMove, onTouchEnd for touch
