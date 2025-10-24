@@ -228,11 +228,22 @@ const Game: React.FC = () => {
       
       // Draw mobile control indicators
       if (isMobile && 'ontouchstart' in window) {
-        // Draw touch indicator
-        ctx.fillStyle = 'rgba(74, 144, 226, 0.3)';
+        // Draw touch indicator at top of screen (not covered by thumb)
+        ctx.fillStyle = 'rgba(34, 197, 94, 0.9)';
         ctx.font = '12px monospace';
         ctx.textAlign = 'center';
-        ctx.fillText('AUTO SHOOT', gameWidth / 2, gameHeight - 20);
+        ctx.fillText('AUTO SHOOT ENABLED', gameWidth / 2, 20);
+        
+        // Optional: Draw indicator above player if you have player object
+        // const circleX = objects.player.x + objects.player.width / 2;
+        // const circleY = objects.player.y - 50; // Above player
+        // ctx.fillStyle = 'rgba(74, 144, 226, 0.2)';
+        // ctx.beginPath();
+        // ctx.arc(circleX, circleY, 30, 0, 2 * Math.PI);
+        // ctx.fill();
+        // ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+        // ctx.font = '20px monospace';
+        // ctx.fillText('👆', circleX, circleY + 6);
       }
       
       // Draw score

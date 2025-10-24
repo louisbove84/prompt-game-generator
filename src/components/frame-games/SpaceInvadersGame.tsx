@@ -372,15 +372,15 @@ const SpaceInvadersGame: React.FC = () => {
     ctx.fillStyle = '#0a0a2e';
     ctx.fillRect(0, 0, gameWidth, gameHeight);
     
-    // Draw control indicator below player (touch devices)
+    // Draw control indicator above player (touch devices)
     if ('ontouchstart' in window) {
-      // Draw semi-transparent circle below ship
+      // Draw indicator above the player so thumb doesn't cover it
       const circleX = gameObjects.player.x + gameObjects.player.width / 2;
-      const circleY = gameObjects.player.y + gameObjects.player.height + 30; // Reduced offset
+      const circleY = gameObjects.player.y - 50; // Above player (negative offset)
       
       ctx.fillStyle = 'rgba(74, 144, 226, 0.2)';
       ctx.beginPath();
-      ctx.arc(circleX, circleY, 30, 0, 2 * Math.PI); // Reduced radius
+      ctx.arc(circleX, circleY, 30, 0, 2 * Math.PI);
       ctx.fill();
       
       // Draw dashed circle border
@@ -396,11 +396,12 @@ const SpaceInvadersGame: React.FC = () => {
       ctx.textAlign = 'center';
       ctx.fillText('👆', circleX, circleY + 6);
       
-      // Draw auto-shoot indicator
+      // Draw auto-shoot indicator text
       ctx.fillStyle = 'rgba(34, 197, 94, 0.9)'; // Green color
-      ctx.font = '12px monospace';
+      ctx.font = '10px monospace';
       ctx.textAlign = 'center';
-      ctx.fillText('AUTO SHOOT', circleX, circleY + 25);
+      ctx.fillText('AUTO', circleX, circleY + 20);
+      ctx.fillText('SHOOT', circleX, circleY + 30);
     }
     
     // Draw player (simple ship shape)

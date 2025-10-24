@@ -248,7 +248,7 @@ export default function FramePage() {
         <DynamicGameLoader 
           gameCode={generatedGame} 
           onBack={handleBackToGenerator}
-          captureScreenshot={hasPaid && !nftMinted}
+          captureScreenshot={hasPaid && !nftMinted && !loadedFromNFT}
           onScreenshotCaptured={handleScreenshotCaptured}
           onError={(err) => {
             setError(err);

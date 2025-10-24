@@ -263,7 +263,7 @@ export default function Home() {
         <DynamicGameLoader 
           gameCode={generatedGame}
           onBack={handleBackToGenerator}
-          captureScreenshot={hasPaid && !nftMinted}
+          captureScreenshot={hasPaid && !nftMinted && !loadedFromNFT}
           onScreenshotCaptured={handleScreenshotCaptured}
           isMintingNFT={isMintingNFT}
           onMintingStateChange={setIsMintingNFT}
