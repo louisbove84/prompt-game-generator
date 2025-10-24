@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
         },
         signal: controller.signal,
         body: JSON.stringify({
-        model: 'grok-3',
+        model: 'grok-beta', // Use grok-beta for faster responses
         stream: false,
         temperature,
         messages: [
@@ -67,25 +67,19 @@ export async function POST(request: NextRequest) {
           },
           {
             role: 'user',
-            content: `Create a unified responsive game that works on both mobile and desktop based on this description:
+            content: `Create a simple, fun game: "${userPrompt}"
 
-"${userPrompt}"
-
-Use this template as a guide:
-
+TEMPLATE:
 ${template}
 
-Remember to:
-1. Return ONLY the complete .tsx file content
-2. Include all necessary imports
-3. Make it fully functional and playable
-4. Follow React best practices
-5. Use TypeScript with proper typing
-6. Support both mobile and desktop
-7. Include proper game loop and rendering
-8. Make it fun and polished!
+REQUIREMENTS:
+- Return ONLY complete .tsx file
+- Use the template structure exactly
+- Keep game mechanics SIMPLE
+- Focus on core gameplay
+- Make it work and playable
 
-Generate the complete game component now:`
+Generate now:`
           }
         ]
       })
