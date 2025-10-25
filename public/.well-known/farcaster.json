@@ -2,26 +2,25 @@
   "miniapp": {
     "name": "GameForge Hub",
     "version": "1",
-    "iconUrl": "https://www.beuxbunk.com/images/gameForgeLoading.jpg",
+    "iconUrl": "https://launch.beuxbunk.com/images/gameForgeLoading.jpg",
     "homeUrl": "https://launch.beuxbunk.com/frame",
-    "imageUrl": "https://www.beuxbunk.com/images/gameForge.jpg",
+    "imageUrl": "https://launch.beuxbunk.com/images/gameForge.jpg",
     "buttonTitle": "Game Forge: Use LLMs to Create Arcade Games",
-    "splashImageUrl": "https://www.beuxbunk.com/images/gameForgeLoading.jpg",
+    "splashImageUrl": "https://launch.beuxbunk.com/images/gameForgeLoading.jpg",
     "splashBackgroundColor": "#1a1a2e",
     "webhookUrl": "https://launch.beuxbunk.com/api/webhook",
     "subtitle": "Create Games with AI",
-    "description": "AI-powered game generator. Pay 0.20 USDC to create custom arcade games or play free demos. Built on Base network.",
+    "description": "AI-powered game generator that creates custom arcade games or play free demos on Base network using LLMs and blockchain technology",
     "screenshotUrls": [
-      "https://www.beuxbunk.com/images/gameForge.jpg",
-      "https://www.beuxbunk.com/images/gameForgeLoading.jpg"
+      "https://launch.beuxbunk.com/images/gameForge.jpg",
+      "https://launch.beuxbunk.com/images/gameForgeLoading.jpg"
     ],
     "primaryCategory": "games",
-    "heroImageUrl": "https://www.beuxbunk.com/images/gameForge.jpg",
+    "heroImageUrl": "https://launch.beuxbunk.com/images/gameForge.jpg",
     "tagline": "ai-games",
-    "ogImageUrl": "https://www.beuxbunk.com/images/gameForge.jpg",
+    "ogImageUrl": "https://launch.beuxbunk.com/images/gameForge.jpg",
     "ogTitle": "GameForge Hub",
     "ogDescription": "AI-powered game generator. Create custom arcade games with LLMs or play free demos on Base network.",
-    "noindex": false,
     "tags": ["games", "ai", "arcade", "base", "generator"]
   },
   "accountAssociation": {
